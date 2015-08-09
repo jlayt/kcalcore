@@ -232,7 +232,7 @@ public:
       @return date or date/time, or invalid if property doesn't contain
       a time value.
     */
-    static KDateTime readICalDateTimeProperty(icalproperty *p,
+    static QDateTime readICalDateTimeProperty(icalproperty *p,
             ICalTimeZones *tzlist, bool utc = false);
 
     /**
