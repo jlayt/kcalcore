@@ -666,7 +666,7 @@ KDateTime Alarm::nextRepetition(const KDateTime &preTime) const
     bool daily = d->mAlarmSnoozeTime.isDaily();
     if (daily) {
         int daysTo = at.daysTo(preTime);
-        if (!preTime.isDateOnly() && preTime.time() <= at.time()) {
+        if (preTime.time() <= at.time()) {
             --daysTo;
         }
         repetition = daysTo / interval + 1;
@@ -696,7 +696,7 @@ KDateTime Alarm::previousRepetition(const KDateTime &afterTime) const
     bool daily = d->mAlarmSnoozeTime.isDaily();
     if (daily) {
         int daysTo = at.daysTo(afterTime);
-        if (afterTime.isDateOnly() || afterTime.time() <= at.time()) {
+        if (afterTime.time() <= at.time()) {
             --daysTo;
         }
         repetition = daysTo / interval;

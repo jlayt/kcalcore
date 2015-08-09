@@ -613,9 +613,7 @@ Event::List MemoryCalendar::rawEventsForDate(const QDate &date,
     while (it != d->mIncidencesForDate[Incidence::TypeEvent].constEnd() && it.key() == dateStr) {
         ev = it.value().staticCast<Event>();
         KDateTime end(ev->dtEnd().toTimeSpec(ev->dtStart()));
-        if (ev->allDay()) {
-            end.setDateOnly(true);
-        } else {
+        if (!ev->allDay()) {
             end = end.addSecs(-1);
         }
         if (end >= kdt) {

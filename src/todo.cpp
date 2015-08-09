@@ -431,17 +431,17 @@ bool Todo::Private::recurTodo(Todo *todo)
             // We convert to the same timeSpec so we get the correct .date()
             const KDateTime rightNow =
                 KDateTime::currentUtcDateTime().toTimeSpec(nextOccurrenceDateTime.timeSpec());
-            const bool isDateOnly = todo->allDay();
+            const bool isAllDay = todo->allDay();
 
             /* Now we search for the occurrence that's _after_ the currentUtcDateTime, or
-             * if it's dateOnly, the occurrrence that's _during or after today_.
+             * if it's allDay, the occurrrence that's _during or after today_.
              * The reason we use "<" for date only, but "<=" for ocurrences with time is that
              * if it's date only, the user can still complete that ocurrence today, so that's
              * the current ocurrence that needs completing.
              */
             while (!todo->recursAt(nextOccurrenceDateTime)                ||
-                    (!isDateOnly && nextOccurrenceDateTime <= rightNow)    ||
-                    (isDateOnly && nextOccurrenceDateTime.date() < rightNow.date())) {
+                    (!isAllDay && nextOccurrenceDateTime <= rightNow)    ||
+                    (isAllDay && nextOccurrenceDateTime.date() < rightNow.date())) {
 
                 if (!nextOccurrenceDateTime.isValid() ||
                         (nextOccurrenceDateTime > recurrenceEndDateTime && r->duration() != -1)) {
@@ -557,10 +557,6 @@ QLatin1String Todo::todoMimeType()
 QLatin1String Todo::iconName(const KDateTime &recurrenceId) const
 {
     KDateTime occurrenceDT = recurrenceId;
-
-    if (recurs() && occurrenceDT.isDateOnly()) {
-        occurrenceDT.setTime(QTime(0, 0));
-    }
 
     const bool usesCompletedTaskPixmap = isCompleted() ||
                                          (recurs() && occurrenceDT.isValid() &&

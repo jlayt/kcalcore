@@ -315,7 +315,6 @@ void IncidenceBase::setDtStart(const KDateTime &dtStart)
 
     update();
     d->mDtStart = dtStart;
-    d->mAllDay = dtStart.isDateOnly();
     d->mDirtyFields.insert(FieldDtStart);
     updated();
 }

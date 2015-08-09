@@ -586,7 +586,6 @@ void Recurrence::setStartDateTime(const KDateTime &start)
         return;
     }
     d->mStartDateTime = start;
-    setAllDay(start.isDateOnly());     // set all RRULEs and EXRULEs
 
     int i, end;
     for (i = 0, end = d->mRRules.count();  i < end;  ++i) {

@@ -122,7 +122,6 @@ public:
                 foreach(KDateTime recurrenceId, occurrences) {    //krazy:exclude=foreach
                     //timesInInterval generates always date-times,
                     //which is not what we want for all-day events
-                    recurrenceId.setDateOnly(isAllDay);
                     occurrenceStartDate = recurrenceId;
 
                     bool resetIncidence = false;

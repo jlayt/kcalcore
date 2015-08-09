@@ -2124,13 +2124,9 @@ QString dumpTime(const KDateTime &dt)
         return QString();
     }
     QString result;
-    if (dt.isDateOnly()) {
-        result = dt.toString(QStringLiteral("%a %Y-%m-%d %:Z"));
-    } else {
-        result = dt.toString(QStringLiteral("%a %Y-%m-%d %H:%M:%S %:Z"));
-        if (dt.isSecondOccurrence()) {
-            result += QStringLiteral(" (2nd)");
-        }
+    result = dt.toString(QStringLiteral("%a %Y-%m-%d %H:%M:%S %:Z"));
+    if (dt.isSecondOccurrence()) {
+        result += QStringLiteral(" (2nd)");
     }
     if (dt.timeSpec() == KDateTime::Spec::ClockTime()) {
         result += QStringLiteral("Clock");

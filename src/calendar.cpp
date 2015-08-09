@@ -721,7 +721,7 @@ Incidence::Ptr Calendar::createException(const Incidence::Ptr &incidence,
     KDateTime end = incidence->dateTime(IncidenceBase::RoleEnd);
 
     if (end.isValid()) {
-        if (incidence->dtStart().isDateOnly()) {
+        if (incidence->allDay()) {
             int offset = incidence->dtStart().daysTo(recurrenceId);
             end = end.addDays(offset);
         } else {
