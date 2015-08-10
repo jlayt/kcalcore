@@ -41,7 +41,7 @@ void EventTest::testSetRoles_data()
     QTest::addColumn<KDateTime>("expectedDtEnd");
 
     const KDateTime todayDate(QDate::currentDate());   // all day event
-    const KDateTime todayDateTime = KDateTime::currentUtcDateTime();
+    const KDateTime todayDateTime = QDateTime::currentDateTimeUtc();
 
     QTest::newRow("dnd 0 duration") << todayDate << todayDate << true << KCalCore::Incidence::RoleDnD
                                     << todayDateTime << todayDateTime << todayDateTime.addSecs(3600);
@@ -177,7 +177,7 @@ void EventTest::testAssign()
 void EventTest::testSerializer_data()
 {
     QTest::addColumn<KCalCore::Event::Ptr>("event");
-    KDateTime today = KDateTime::currentUtcDateTime();
+    KDateTime today = QDateTime::currentDateTimeUtc();
     KDateTime yesterday = today.addDays(-1);
 
     Event::Ptr event1 = Event::Ptr(new Event());

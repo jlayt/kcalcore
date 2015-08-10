@@ -318,7 +318,7 @@ bool Todo::isInProgress(bool first) const
                 return true;
             }
         } else {
-            KDateTime currDate = KDateTime::currentUtcDateTime();
+            KDateTime currDate = QDateTime::currentDateTimeUtc();
             if (dtStart(first) <= currDate && currDate < dtDue(first)) {
                 return true;
             }
@@ -352,7 +352,7 @@ bool Todo::isNotStarted(bool first) const
             return false;
         }
     } else {
-        if (dtStart(first) >= KDateTime::currentUtcDateTime()) {
+        if (dtStart(first) >= QDateTime::currentDateTimeUtc()) {
             return false;
         }
     }
@@ -402,7 +402,7 @@ bool Todo::isOverdue() const
     }
 
     const bool inPast = allDay() ? dtDue().date() < QDate::currentDate()
-                        : dtDue() < KDateTime::currentUtcDateTime();
+                        : dtDue() < QDateTime::currentDateTimeUtc();
 
     return inPast && !isCompleted();
 }
@@ -430,7 +430,7 @@ bool Todo::Private::recurTodo(Todo *todo)
                  nextOccurrenceDateTime <= recurrenceEndDateTime))) {
             // We convert to the same timeSpec so we get the correct .date()
             const KDateTime rightNow =
-                KDateTime::currentUtcDateTime().toTimeSpec(nextOccurrenceDateTime.timeSpec());
+                QDateTime::currentDateTimeUtc().toTimeSpec(nextOccurrenceDateTime.timeSpec());
             const bool isAllDay = todo->allDay();
 
             /* Now we search for the occurrence that's _after_ the currentUtcDateTime, or

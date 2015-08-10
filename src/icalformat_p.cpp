@@ -271,7 +271,7 @@ icalcomponent *ICalFormatImpl::writeTodo(const Todo::Ptr &todo, ICalTimeZones *t
         if (!todo->hasCompletedDate()) {
             // If the todo was created by KOrganizer<2.2 it does not have
             // a correct completion date. Set one now.
-            todo->setCompleted(KDateTime::currentUtcDateTime());
+            todo->setCompleted(QDateTime::currentDateTimeUtc());
         }
         icaltimetype completed = writeICalUtcDateTime(todo->completed());
         icalcomponent_add_property(
@@ -3120,7 +3120,7 @@ icalcomponent *ICalFormatImpl::createScheduleComponent(const IncidenceBase::Ptr 
     if (method != KCalCore::iTIPNoMethod) {
         //Not very nice, but since dtstamp changes semantics if used in scheduling, we have to adapt
         icalcomponent_set_dtstamp(
-            inc, writeICalUtcDateTime(KDateTime::currentUtcDateTime()));
+            inc, writeICalUtcDateTime(QDateTime::currentDateTimeUtc()));
     }
 
     /*

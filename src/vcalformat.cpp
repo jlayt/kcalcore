@@ -1012,7 +1012,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
         anEvent->setLastModified(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
         deleteStr(s);
     } else {
-        anEvent->setLastModified(KDateTime::currentUtcDateTime());
+        anEvent->setLastModified(QDateTime::currentDateTimeUtc());
     }
 
     // organizer
@@ -1502,7 +1502,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
         anEvent->setLastModified(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
         deleteStr(s);
     } else {
-        anEvent->setLastModified(KDateTime::currentUtcDateTime());
+        anEvent->setLastModified(QDateTime::currentDateTimeUtc());
     }
 
     // organizer

@@ -307,7 +307,7 @@ QString Incidence::instanceIdentifier() const
 
 void Incidence::recreate()
 {
-    const KDateTime nowUTC = KDateTime::currentUtcDateTime();
+    const KDateTime nowUTC = QDateTime::currentDateTimeUtc();
     setCreated(nowUTC);
 
     setSchedulingID(QString(), CalFormat::createUniqueId());

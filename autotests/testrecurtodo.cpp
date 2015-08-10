@@ -30,7 +30,7 @@ void RecurTodoTest::testAllDay()
 {
     qputenv("TZ", "GMT");
     const QDate currentDate = QDate::currentDate();
-    const KDateTime currentUtcDateTime = KDateTime::currentUtcDateTime();
+    const KDateTime currentUtcDateTime = QDateTime::currentDateTimeUtc();
 
     const QDate dueDate(QDate::currentDate());
     Todo *todo = new Todo();
@@ -104,7 +104,7 @@ void RecurTodoTest::testNonAllDay()
     recurrence->setDaily(1);
     QVERIFY(recurrence->startDateTime().isValid());
     QVERIFY(todo->dtDue() == originalDtDue);
-    todo->setCompleted(KDateTime::currentUtcDateTime());
+    todo->setCompleted(QDateTime::currentDateTimeUtc());
     QVERIFY(todo->recurs());
     QVERIFY(todo->percentComplete() == 0);
 
@@ -119,7 +119,7 @@ void RecurTodoTest::testNonAllDay()
 
     QVERIFY(equal);
 
-    todo->setCompleted(KDateTime::currentUtcDateTime());
+    todo->setCompleted(QDateTime::currentDateTimeUtc());
     QVERIFY(todo->dtStart() == KDateTime(currentDate, currentTime, todo->dtStart().timeSpec()).addDays(2));
     QVERIFY(todo->dtDue(true /*first ocurrence*/) == KDateTime(treeDaysAgo, currentTime));
 }
@@ -186,7 +186,7 @@ void RecurTodoTest::testRecurTodo()
     QCOMPARE(todo->percentComplete(), 0);
 
     // Recur it
-    todo->setCompleted(KDateTime::currentUtcDateTime());
+    todo->setCompleted(QDateTime::currentDateTimeUtc());
     QCOMPARE(todo->percentComplete(), 0);
 
     if (legacyMode) {

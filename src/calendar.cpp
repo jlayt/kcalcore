@@ -708,7 +708,7 @@ Incidence::Ptr Calendar::createException(const Incidence::Ptr &incidence,
     }
 
     Incidence::Ptr newInc(incidence->clone());
-    newInc->setCreated(KDateTime::currentUtcDateTime());
+    newInc->setCreated(QDateTime::currentDateTimeUtc());
     newInc->setRevision(0);
     //Recurring exceptions are not support for now
     newInc->clearRecurrence();
@@ -1255,7 +1255,7 @@ void Calendar::incidenceUpdated(const QString &uid, const KDateTime &recurrenceI
         return;
     }
 
-    inc->setLastModified(KDateTime::currentUtcDateTime());
+    inc->setLastModified(QDateTime::currentDateTimeUtc());
     // we should probably update the revision number here,
     // or internally in the Event itself when certain things change.
     // need to verify with ical documentation.

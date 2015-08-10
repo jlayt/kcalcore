@@ -126,7 +126,7 @@ void TodoTest::testSetCompleted()
     todo1.setSummary("Todo Summary");
     todo2.setSummary("Todo Summary");
     todo3.setSummary("Todo Summary");
-    KDateTime today = KDateTime::currentUtcDateTime();
+    KDateTime today = QDateTime::currentDateTimeUtc();
 
     // due yesterday
     KDateTime originalDueDate = today.addDays(-1);
@@ -149,7 +149,7 @@ void TodoTest::testSetCompleted()
 
 void TodoTest::testStatus()
 {
-    KDateTime today = KDateTime::currentUtcDateTime();
+    KDateTime today = QDateTime::currentDateTimeUtc();
     KDateTime yesterday = today.addDays(-1);
 
     Todo todo1;
@@ -172,7 +172,7 @@ void TodoTest::testSerializer_data()
 {
     QTest::addColumn<KCalCore::Todo::Ptr>("todo");
 
-    KDateTime today = KDateTime::currentUtcDateTime();
+    KDateTime today = QDateTime::currentDateTimeUtc();
     KDateTime yesterday = today.addDays(-1);
 
     Todo::Ptr todo1 = Todo::Ptr(new Todo());
@@ -262,7 +262,7 @@ void TodoTest::testSerializer()
 
 void TodoTest::testRoles()
 {
-    const KDateTime today = KDateTime::currentUtcDateTime();
+    const KDateTime today = QDateTime::currentDateTimeUtc();
     const KDateTime yesterday = today.addDays(-1);
     Todo todo;
     todo.setDtStart(today.addDays(-1));
