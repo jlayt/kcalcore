@@ -1121,9 +1121,8 @@ void ICalTimeZoneSourcePrivate::parseTransitions(const MSSystemTime &date,
 {
     // NOTE that we need to set start and end times and they cannot be
     // to far in either direction to avoid bloating the transitions list
-    const KDateTime klocalStart(QDateTime(QDate(2000, 1, 1), QTime(0, 0, 0)),
-                                KDateTime::Spec::ClockTime());
-    const KDateTime maxTime(MAX_DATE(), KDateTime::Spec::ClockTime());
+    const KDateTime klocalStart(QDateTime(QDate(2000, 1, 1), QTime(0, 0, 0)), Qt::LocalTime);
+    const KDateTime maxTime(MAX_DATE(), QTime(23, 59, 59, 999), Qt::LocalTime);
 
     if (date.wYear) {
         // Absolute change time.
@@ -1270,8 +1269,8 @@ QList<QDateTime> ICalTimeZoneSourcePrivate::parsePhase(icalcomponent *c,
          * Note that we had to get DTSTART, TZOFFSETFROM, TZOFFSETTO before reading
          * recurrences.
          */
-        const KDateTime klocalStart(localStart, KDateTime::Spec::ClockTime());
-        const KDateTime maxTime(MAX_DATE(), KDateTime::Spec::ClockTime());
+        const KDateTime klocalStart(localStart.date(), localStart.time(), Qt::LocalTime);
+        const KDateTime maxTime(MAX_DATE(), QTime(23, 59, 59, 999), Qt::LocalTime);
         Recurrence recur;
         icalproperty *p = icalcomponent_get_first_property(c, ICAL_ANY_PROPERTY);
         while (p) {
@@ -1307,9 +1306,9 @@ QList<QDateTime> ICalTimeZoneSourcePrivate::parsePhase(icalcomponent *c,
                 // The end date time specified in an RRULE should be in UTC.
                 // Convert to local time to avoid timesInInterval() getting things wrong.
                 if (r.duration() == 0) {
-                    KDateTime end(r.endDt());
-                    if (end.timeSpec() == KDateTime::Spec::UTC()) {
-                        end.setTimeSpec(KDateTime::Spec::ClockTime());
+                    QDateTime end(r.endDt());
+                    if (end.timeZone() == QTimeZone::utc()) {
+                        end.setTimeZone(QTimeZone::systemTimeZone());
                         r.setEndDt(end.addSecs(prevOffset));
                     }
                 }

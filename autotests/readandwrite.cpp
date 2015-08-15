@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     }
 #endif
 
-    MemoryCalendar::Ptr cal(new MemoryCalendar(KDateTime::UTC));
+    MemoryCalendar::Ptr cal(new MemoryCalendar(QTimeZone::utc()));
     FileStorage instore(cal, input);
 
     if (!instore.load()) {

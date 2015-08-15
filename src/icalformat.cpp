@@ -56,14 +56,14 @@ class Q_DECL_HIDDEN KCalCore::ICalFormat::Private
 public:
     Private(ICalFormat *parent)
         : mImpl(new ICalFormatImpl(parent)),
-          mTimeSpec(KDateTime::UTC)
+          mTimeZone(QTimeZone::utc())
     {}
     ~Private()
     {
         delete mImpl;
     }
     ICalFormatImpl *mImpl;
-    KDateTime::Spec mTimeSpec;
+    QTimeZone mTimeZone;
 };
 //@endcond
 
@@ -238,7 +238,7 @@ bool ICalFormat::fromRawString(const Calendar::Ptr &cal, const QByteArray &strin
 
 Incidence::Ptr ICalFormat::fromString(const QString &string)
 {
-    MemoryCalendar::Ptr cal(new MemoryCalendar(d->mTimeSpec));
+    MemoryCalendar::Ptr cal(new MemoryCalendar(d->mTimeZone));
     fromString(cal, string);
 
     const Incidence::List list = cal->incidences();
@@ -330,7 +330,7 @@ QString ICalFormat::toString(const Calendar::Ptr &cal,
 
 QString ICalFormat::toICalString(const Incidence::Ptr &incidence)
 {
-    MemoryCalendar::Ptr cal(new MemoryCalendar(d->mTimeSpec));
+    MemoryCalendar::Ptr cal(new MemoryCalendar(d->mTimeZone));
     cal->addIncidence(Incidence::Ptr(incidence->clone()));
     return toString(cal.staticCast<Calendar>());
 }
@@ -423,7 +423,7 @@ QString ICalFormat::createScheduleMessage(const IncidenceBase::Ptr &incidence,
 
             // Handle conversion to UTC times
             if (useUtcTimes) {
-                i->shiftTimes(KDateTime::Spec::UTC(), KDateTime::Spec::UTC());
+                i->shiftTimes(QTimeZone::utc(), QTimeZone::utc());
             }
 
             // Handle scheduling ID being present
@@ -485,7 +485,7 @@ FreeBusy::Ptr ICalFormat::parseFreeBusy(const QString &str)
 ScheduleMessage::Ptr ICalFormat::parseScheduleMessage(const Calendar::Ptr &cal,
         const QString &messageText)
 {
-    setTimeSpec(cal->timeSpec());
+    setTimeZone(cal->timeZone());
     clearException();
 
     if (messageText.isEmpty()) {
@@ -652,20 +652,19 @@ ScheduleMessage::Ptr ICalFormat::parseScheduleMessage(const Calendar::Ptr &cal,
     return ScheduleMessage::Ptr(new ScheduleMessage(incidence, method, status));
 }
 
-void ICalFormat::setTimeSpec(const KDateTime::Spec &timeSpec)
+void ICalFormat::setTimeZone(const QTimeZone &timeZone)
 {
-    d->mTimeSpec = timeSpec;
+    d->mTimeZone = timeZone;
 }
 
-KDateTime::Spec ICalFormat::timeSpec() const
+QTimeZone ICalFormat::timeZone() const
 {
-    return d->mTimeSpec;
+    return d->mTimeZone;
 }
 
-QString ICalFormat::timeZoneId() const
+QByteArray ICalFormat::timeZoneId() const
 {
-    KTimeZone tz = d->mTimeSpec.timeZone();
-    return tz.isValid() ? tz.name() : QString();
+    return d->mTimeZone.id();
 }
 
 void ICalFormat::virtual_hook(int id, void *data)

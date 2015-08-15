@@ -38,6 +38,7 @@
 #include "period.h"
 
 #include <QtCore/QMetaType>
+#include <QtCore/QTimeZone>
 
 namespace KCalCore
 {
@@ -155,8 +156,7 @@ public:
       @copydoc
       IncidenceBase::shiftTimes()
     */
-    void shiftTimes(const KDateTime::Spec &oldSpec,
-                    const KDateTime::Spec &newSpec) Q_DECL_OVERRIDE;
+    void shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone) Q_DECL_OVERRIDE;
 
     /**
       Returns the list of all periods within the free/busy.

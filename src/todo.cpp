@@ -38,6 +38,7 @@
 #include "kcalcore_debug.h"
 
 #include <QTime>
+#include <QTimeZone>
 
 using namespace KCalCore;
 
@@ -359,19 +360,18 @@ bool Todo::isNotStarted(bool first) const
     return true;
 }
 
-void Todo::shiftTimes(const KDateTime::Spec &oldSpec,
-                      const KDateTime::Spec &newSpec)
+void Todo::shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone)
 {
-    Incidence::shiftTimes(oldSpec, newSpec);
-    d->mDtDue = d->mDtDue.toTimeSpec(oldSpec);
-    d->mDtDue.setTimeSpec(newSpec);
+    Incidence::shiftTimes(oldZone, newZone);
+    d->mDtDue = d->mDtDue.toTimeZone(oldZone);
+    d->mDtDue.setTimeZone(newZone);
     if (recurs()) {
-        d->mDtRecurrence = d->mDtRecurrence.toTimeSpec(oldSpec);
-        d->mDtRecurrence.setTimeSpec(newSpec);
+        d->mDtRecurrence = d->mDtRecurrence.toTimeZone(oldZone);
+        d->mDtRecurrence.setTimeZone(newZone);
     }
     if (hasCompletedDate()) {
-        d->mCompleted = d->mCompleted.toTimeSpec(oldSpec);
-        d->mCompleted.setTimeSpec(newSpec);
+        d->mCompleted = d->mCompleted.toTimeZone(oldZone);
+        d->mCompleted.setTimeZone(newZone);
     }
 }
 
@@ -386,11 +386,11 @@ KDateTime Todo::dtRecurrence() const
     return d->mDtRecurrence.isValid() ? d->mDtRecurrence : d->mDtDue;
 }
 
-bool Todo::recursOn(const QDate &date, const KDateTime::Spec &timeSpec) const
+bool Todo::recursOn(const QDate &date, const QTimeZone &timeZone) const
 {
     QDate today = QDate::currentDate();
     return
-        Incidence::recursOn(date, timeSpec) &&
+        Incidence::recursOn(date, timeZone) &&
         !(date < today && d->mDtRecurrence.date() < today &&
           d->mDtRecurrence > recurrence()->startDateTime());
 }
@@ -428,9 +428,8 @@ bool Todo::Private::recurTodo(Todo *todo)
         if ((r->duration() == -1 ||
                 (nextOccurrenceDateTime.isValid() && recurrenceEndDateTime.isValid() &&
                  nextOccurrenceDateTime <= recurrenceEndDateTime))) {
-            // We convert to the same timeSpec so we get the correct .date()
-            const KDateTime rightNow =
-                QDateTime::currentDateTimeUtc().toTimeSpec(nextOccurrenceDateTime.timeSpec());
+            // We convert to the same timeZone so we get the correct .date()
+            const QDateTime rightNow = QDateTime::currentDateTimeUtc().toTimeZone(nextOccurrenceDateTime.timeZone());
             const bool isAllDay = todo->allDay();
 
             /* Now we search for the occurrence that's _after_ the currentUtcDateTime, or

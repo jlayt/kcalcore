@@ -28,6 +28,7 @@
 #include "recurrencerule.h"
 
 class QBitArray;
+class QTimeZone;
 
 namespace KCalCore
 {
@@ -199,9 +200,9 @@ public:
       Returns true if the date specified is one on which the event will recur.
 
       @param date date to check.
-      @param timeSpec time specification for @p date.
+      @param timeZone time zone for @p date.
     */
-    bool recursOn(const QDate &date, const KDateTime::Spec &timeSpec) const;
+    bool recursOn(const QDate &date, const QTimeZone &timeZone) const;
 
     /**
       Returns true if the date/time specified is one at which the event will
@@ -225,11 +226,11 @@ public:
 
     /** Returns a list of the times on the specified date at which the
      * recurrence will occur. The returned times should be interpreted in the
-     * context of @p timeSpec.
+     * context of @p timeZone.
      * @param date the date for which to find the recurrence times
-     * @param timeSpec time specification for @p date
+     * @param timeZone time zone for @p date
      */
-    TimeList recurTimesOn(const QDate &date, const KDateTime::Spec &timeSpec) const;
+    TimeList recurTimesOn(const QDate &date, const QTimeZone &timeZone) const;
 
     /** Returns a list of all the times at which the recurrence will occur
      * between two specified times.
@@ -314,15 +315,15 @@ public:
       time zone rather than from the actual recurrence time zone.
 
       For example, shifting a recurrence whose start time is 09:00 America/New York,
-      using an old viewing time zone (@p oldSpec) of Europe/London, to a new time
-      zone (@p newSpec) of Europe/Paris, will result in the time being shifted
+      using an old viewing time zone (@p oldZone) of Europe/London, to a new time
+      zone (@p newZone) of Europe/Paris, will result in the time being shifted
       from 14:00 (which is the London time of the recurrence start) to 14:00 Paris
       time.
 
-      @param oldSpec the time specification which provides the clock times
-      @param newSpec the new time specification
+      @param oldZone the time zone which provides the clock times
+      @param newZone the new time zone
     */
-    void shiftTimes(const KDateTime::Spec &oldSpec, const KDateTime::Spec &newSpec);
+    void shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone);
 
     /** Sets an event to recur minutely. By default infinite recurrence is used.
         To set an end date use the method setEndDate and to set the number

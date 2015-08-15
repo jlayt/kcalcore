@@ -85,15 +85,15 @@ public:
         }
         delete mDefaultFilter;
     }
-    KDateTime::Spec timeZoneIdSpec(const QString &timeZoneId, bool view);
+    QTimeZone timeZoneIdZone(const QByteArray &timeZoneId, bool view);
 
     QString mProductId;
     Person::Ptr mOwner;
     ICalTimeZones *mTimeZones; // collection of time zones used in this calendar
     ICalTimeZone mBuiltInTimeZone;   // cached time zone lookup
     ICalTimeZone mBuiltInViewTimeZone;   // cached viewing time zone lookup
-    KDateTime::Spec mTimeSpec;
-    mutable KDateTime::Spec mViewTimeSpec;
+    QTimeZone mTimeZone;
+    mutable QTimeZone mViewTimeZone;
     bool mModified;
     bool mNewObserver;
     bool mObserversEnabled;
@@ -210,14 +210,14 @@ private:
 };
 //@endcond
 
-Calendar::Calendar(const KDateTime::Spec &timeSpec)
+Calendar::Calendar(const QTimeZone &timeZone)
     : d(new KCalCore::Calendar::Private)
 {
-    d->mTimeSpec = timeSpec;
-    d->mViewTimeSpec = timeSpec;
+    d->mTimeZone = timeZone;
+    d->mViewTimeZone = timeZone;
 }
 
-Calendar::Calendar(const QString &timeZoneId)
+Calendar::Calendar(const QByteArray &timeZoneId)
     : d(new KCalCore::Calendar::Private)
 {
     setTimeZoneId(timeZoneId);
@@ -240,45 +240,45 @@ void Calendar::setOwner(const Person::Ptr &owner)
     setModified(true);
 }
 
-void Calendar::setTimeSpec(const KDateTime::Spec &timeSpec)
+void Calendar::setTimeZone(const QTimeZone &timeZone)
 {
-    d->mTimeSpec = timeSpec;
+    d->mTimeZone = timeZone;
     d->mBuiltInTimeZone = ICalTimeZone();
-    setViewTimeSpec(timeSpec);
+    setViewTimeZone(timeZone);
 
-    doSetTimeSpec(d->mTimeSpec);
+    doSetTimeZone(d->mTimeZone);
 }
 
-KDateTime::Spec Calendar::timeSpec() const
+QTimeZone Calendar::timeZone() const
 {
-    return d->mTimeSpec;
+    return d->mTimeZone;
 }
 
-void Calendar::setTimeZoneId(const QString &timeZoneId)
+void Calendar::setTimeZoneId(const QByteArray &timeZoneId)
 {
-    d->mTimeSpec = d->timeZoneIdSpec(timeZoneId, false);
-    d->mViewTimeSpec = d->mTimeSpec;
+    d->mTimeZone = d->timeZoneIdZone(timeZoneId, false);
+    d->mViewTimeZone = d->mTimeZone;
     d->mBuiltInViewTimeZone = d->mBuiltInTimeZone;
 
-    doSetTimeSpec(d->mTimeSpec);
+    doSetTimeZone(d->mTimeZone);
 }
 
 //@cond PRIVATE
-KDateTime::Spec Calendar::Private::timeZoneIdSpec(const QString &timeZoneId,
-        bool view)
+QTimeZone Calendar::Private::timeZoneIdZone(const QByteArray &timeZoneId, bool view)
 {
     if (view) {
         mBuiltInViewTimeZone = ICalTimeZone();
     } else {
         mBuiltInTimeZone = ICalTimeZone();
     }
-    if (timeZoneId == QLatin1String("UTC")) {
-        return KDateTime::UTC;
+    if (timeZoneId == QByteArray("UTC")) {
+        return QTimeZone::utc();
     }
-    ICalTimeZone tz = mTimeZones->zone(timeZoneId);
+    ICalTimeZone tz = mTimeZones->zone(QString::fromLatin1(timeZoneId));
     if (!tz.isValid()) {
         ICalTimeZoneSource tzsrc;
-        tz = tzsrc.parse(icaltimezone_get_builtin_timezone(timeZoneId.toLatin1()));
+        //TODO Surely this should be trying the system database first?
+        tz = tzsrc.parse(icaltimezone_get_builtin_timezone(timeZoneId));
         if (view) {
             mBuiltInViewTimeZone = tz;
         } else {
@@ -286,39 +286,37 @@ KDateTime::Spec Calendar::Private::timeZoneIdSpec(const QString &timeZoneId,
         }
     }
     if (tz.isValid()) {
-        return tz;
+        return QTimeZone(tz.name().toLatin1());
     } else {
-        return KDateTime::ClockTime;
+        return QTimeZone::systemTimeZone();
     }
 }
 //@endcond
 
-QString Calendar::timeZoneId() const
+QByteArray Calendar::timeZoneId() const
 {
-    KTimeZone tz = d->mTimeSpec.timeZone();
-    return tz.isValid() ? tz.name() : QString();
+    return d->mTimeZone.id();
 }
 
-void Calendar::setViewTimeSpec(const KDateTime::Spec &timeSpec) const
+void Calendar::setViewTimeZone(const QTimeZone &timeZone) const
 {
-    d->mViewTimeSpec = timeSpec;
+    d->mViewTimeZone = timeZone;
     d->mBuiltInViewTimeZone = ICalTimeZone();
 }
 
-void Calendar::setViewTimeZoneId(const QString &timeZoneId) const
+void Calendar::setViewTimeZoneId(const QByteArray &timeZoneId) const
 {
-    d->mViewTimeSpec = d->timeZoneIdSpec(timeZoneId, true);
+    d->mViewTimeZone = d->timeZoneIdZone(timeZoneId, true);
 }
 
-KDateTime::Spec Calendar::viewTimeSpec() const
+QTimeZone Calendar::viewTimeZone() const
 {
-    return d->mViewTimeSpec;
+    return d->mViewTimeZone;
 }
 
-QString Calendar::viewTimeZoneId() const
+QByteArray Calendar::viewTimeZoneId() const
 {
-    KTimeZone tz = d->mViewTimeSpec.timeZone();
-    return tz.isValid() ? tz.name() : QString();
+    return d->mViewTimeZone.id();
 }
 
 ICalTimeZones *Calendar::timeZones() const
@@ -339,24 +337,24 @@ void Calendar::setTimeZones(ICalTimeZones *zones)
     d->mTimeZones = zones;
 }
 
-void Calendar::shiftTimes(const KDateTime::Spec &oldSpec, const KDateTime::Spec &newSpec)
+void Calendar::shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone)
 {
-    setTimeSpec(newSpec);
+    setTimeZone(newZone);
 
     int i, end;
     Event::List ev = events();
     for (i = 0, end = ev.count();  i < end;  ++i) {
-        ev[i]->shiftTimes(oldSpec, newSpec);
+        ev[i]->shiftTimes(oldZone, newZone);
     }
 
     Todo::List to = todos();
     for (i = 0, end = to.count();  i < end;  ++i) {
-        to[i]->shiftTimes(oldSpec, newSpec);
+        to[i]->shiftTimes(oldZone, newZone);
     }
 
     Journal::List jo = journals();
     for (i = 0, end = jo.count();  i < end;  ++i) {
-        jo[i]->shiftTimes(oldSpec, newSpec);
+        jo[i]->shiftTimes(oldZone, newZone);
     }
 }
 
@@ -639,11 +637,11 @@ Event::List Calendar::sortEvents(const Event::List &eventList,
 }
 
 Event::List Calendar::events(const QDate &date,
-                             const KDateTime::Spec &timeSpec,
+                             const QTimeZone &timeZone,
                              EventSortField sortField,
                              SortDirection sortDirection) const
 {
-    Event::List el = rawEventsForDate(date, timeSpec, sortField, sortDirection);
+    Event::List el = rawEventsForDate(date, timeZone, sortField, sortDirection);
     d->mFilter->apply(&el);
     return el;
 }
@@ -656,10 +654,10 @@ Event::List Calendar::events(const KDateTime &dt) const
 }
 
 Event::List Calendar::events(const QDate &start, const QDate &end,
-                             const KDateTime::Spec &timeSpec,
+                             const QTimeZone &timeZone,
                              bool inclusive) const
 {
-    Event::List el = rawEvents(start, end, timeSpec, inclusive);
+    Event::List el = rawEvents(start, end, timeZone, inclusive);
     d->mFilter->apply(&el);
     return el;
 }
@@ -738,7 +736,7 @@ Incidence::Ptr Calendar::createException(const Incidence::Ptr &incidence,
 // into the calendar, which is left to the calling application.
 Incidence::Ptr Calendar::dissociateOccurrence(const Incidence::Ptr &incidence,
         const QDate &date,
-        const KDateTime::Spec &spec,
+        const QTimeZone &timeZone,
         bool single)
 {
     if (!incidence || !incidence->recurs()) {
@@ -774,8 +772,8 @@ Incidence::Ptr Calendar::dissociateOccurrence(const Incidence::Ptr &incidence,
     // Adjust the date of the incidence
     if (incidence->type() == Incidence::TypeEvent) {
         Event::Ptr ev = newInc.staticCast<Event>();
-        KDateTime start(ev->dtStart());
-        int daysTo = start.toTimeSpec(spec).date().daysTo(date);
+        QDateTime start(ev->dtStart());
+        int daysTo = start.toTimeZone(timeZone).date().daysTo(date);
         ev->setDtStart(start.addDays(daysTo));
         ev->setDtEnd(ev->dtEnd().addDays(daysTo));
     } else if (incidence->type() == Incidence::TypeTodo) {
@@ -783,15 +781,15 @@ Incidence::Ptr Calendar::dissociateOccurrence(const Incidence::Ptr &incidence,
         bool haveOffset = false;
         int daysTo = 0;
         if (td->hasDueDate()) {
-            KDateTime due(td->dtDue());
-            daysTo = due.toTimeSpec(spec).date().daysTo(date);
+            QDateTime due(td->dtDue());
+            daysTo = due.toTimeZone(timeZone).date().daysTo(date);
             td->setDtDue(due.addDays(daysTo), true);
             haveOffset = true;
         }
         if (td->hasStartDate()) {
             KDateTime start(td->dtStart());
             if (!haveOffset) {
-                daysTo = start.toTimeSpec(spec).date().daysTo(date);
+                daysTo = start.toTimeZone(timeZone).date().daysTo(date);
             }
             td->setDtStart(start.addDays(daysTo));
             haveOffset = true;
@@ -959,9 +957,9 @@ Todo::List Calendar::todos(const QDate &date) const
 }
 
 Todo::List Calendar::todos(const QDate &start, const QDate &end,
-                           const KDateTime::Spec &timespec, bool inclusive) const
+                           const QTimeZone &timeZone, bool inclusive) const
 {
-    Todo::List tl = rawTodos(start, end, timespec, inclusive);
+    Todo::List tl = rawTodos(start, end, timeZone, inclusive);
     d->mFilter->apply(&tl);
     return tl;
 }
@@ -1265,9 +1263,9 @@ void Calendar::incidenceUpdated(const QString &uid, const KDateTime &recurrenceI
     setModified(true);
 }
 
-void Calendar::doSetTimeSpec(const KDateTime::Spec &timeSpec)
+void Calendar::doSetTimeZone(const QTimeZone &timeZone)
 {
-    Q_UNUSED(timeSpec);
+    Q_UNUSED(timeZone);
 }
 
 void Calendar::notifyIncidenceAdded(const Incidence::Ptr &incidence)

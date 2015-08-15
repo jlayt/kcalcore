@@ -167,7 +167,7 @@ public:
 private:
     KDateTime m_dateTime;
     bool m_isDateOnly;
-}
+};
 
 ToComponentVisitor::~ToComponentVisitor()
 {
@@ -1304,7 +1304,7 @@ Event::Ptr ICalFormatImpl::readEvent(icalcomponent *vevent, ICalTimeZones *tzlis
                 if (endDate < event->dtStart().date()) {
                     endDate = event->dtStart().date();
                 }
-                event->setDtEnd(KDateTime(endDate, event->dtStart().timeSpec()));
+                event->setDtEnd(QDateTime(endDate, event->dtStart().timeZone()));
             } else {
                 event->setDtEnd(idt);
                 event->setAllDay(false);
@@ -2406,7 +2406,7 @@ icaltimetype ICalFormatImpl::writeICalDateTime(const KDateTime &datetime)
         t.second = datetime.time().second();
     }
     t.zone = 0;   // zone is NOT set
-    t.is_utc = datetime.isUtc() ? 1 : 0;
+    t.is_utc = datetime.timeZone() == QTimeZone::utc() ? 1 : 0;
 
     // _dumpIcaltime( t );
 
@@ -2511,9 +2511,9 @@ ICalDateTime ICalFormatImpl::readICalDateTime(icalproperty *p,
 //  qCDebug(KCALCORE_LOG);
 //  _dumpIcaltime( t );
 
-    KDateTime::Spec timeSpec;
+    QTimeZone timeZone;
     if (t.is_utc  ||  t.zone == icaltimezone_get_utc_timezone()) {
-        timeSpec = KDateTime::UTC;   // the time zone is UTC
+        timeZone = QTimeZone::utc();   // the time zone is UTC
         utc = false;    // no need to convert to UTC
     } else {
         if (!tzlist) {
@@ -2532,7 +2532,7 @@ ICalDateTime ICalFormatImpl::readICalDateTime(icalproperty *p,
         }
 
         if (!tzid) {
-            timeSpec = KDateTime::ClockTime;
+            timeZone = QTimeZone::systemTimeZone();
         } else {
             QString tzidStr = QString::fromUtf8(tzid);
             ICalTimeZone tz;
@@ -2549,19 +2549,20 @@ ICalDateTime ICalFormatImpl::readICalDateTime(icalproperty *p,
                 }
                 tz = newtz;
             }
-            timeSpec = tz.isValid() ? KDateTime::Spec(tz) : KDateTime::LocalZone;
+            timeZone = tz.isValid() ? QTimeZone(tz.name().toLatin1()) : QTimeZone::systemTimeZone();
         }
     }
     KDateTime result;
     if (t.is_date) {
-        if utc
-            timeSpec = KDateTime::UTC;
-        result = KDateTime(QDate(t.year, t.month, t.day), QTime(0, 0, 0), timeSpec);
+        if (utc) {
+            timeZone = QTimeZone::utc();
+        }
+        result = QDateTime(QDate(t.year, t.month, t.day), QTime(0, 0, 0), timeZone);
     } else {
-        result = KDateTime(QDate(t.year, t.month, t.day),
-                           QTime(t.hour, t.minute, t.second), timeSpec);
-        if utc
+        result = QDateTime(QDate(t.year, t.month, t.day), QTime(t.hour, t.minute, t.second), timeZone);
+        if (utc) {
             result = result.toUtc();
+        }
     }
     return ICalDateTime(result, t.is_date);
 }
@@ -2633,7 +2634,7 @@ ICalDateTime ICalFormatImpl::readICalDateTimeProperty(icalproperty *p,
         break;
     }
     if (tp.time.is_date) {
-        return ICalDateTime(KDateTime(readICalDate(tp.time), QTime(0, 0, 0), KDateTime::Spec::ClockTime()), true);
+        return ICalDateTime(QDateTime(readICalDate(tp.time), QTime(0, 0, 0), QTimeZone::systemTimeZone()), true);
     } else {
         return readICalDateTime(p, tp.time, tzlist, utc);
     }

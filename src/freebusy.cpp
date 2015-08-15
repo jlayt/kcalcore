@@ -160,7 +160,7 @@ void FreeBusy::Private::init(const Event::List &eventList,
                     //        a different time than the original event.
                     extraDays = event->dtStart().daysTo(event->dtEnd());
                     for (x = 0; x <= extraDays; ++x) {
-                        if (event->recursOn(day.addDays(-x), start.timeSpec())) {
+                        if (event->recursOn(day.addDays(-x), start.timeZone())) {
                             tmpStart.setDate(day.addDays(-x));
                             tmpStart.setTime(event->dtStart().time());
                             tmpEnd = event->duration().end(tmpStart);
@@ -170,7 +170,7 @@ void FreeBusy::Private::init(const Event::List &eventList,
                         }
                     }
                 } else {
-                    if (event->recursOn(day, start.timeSpec())) {
+                    if (event->recursOn(day, start.timeZone())) {
                         tmpStart.setTime(event->dtStart().time());
                         tmpEnd.setTime(event->dtEnd().time());
 
@@ -299,15 +299,14 @@ void FreeBusy::merge(const FreeBusy::Ptr &freeBusy)
     sortList();
 }
 
-void FreeBusy::shiftTimes(const KDateTime::Spec &oldSpec,
-                          const KDateTime::Spec &newSpec)
+void FreeBusy::shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone)
 {
-    if (oldSpec.isValid() && newSpec.isValid() && oldSpec != newSpec) {
-        IncidenceBase::shiftTimes(oldSpec, newSpec);
-        d->mDtEnd = d->mDtEnd.toTimeSpec(oldSpec);
-        d->mDtEnd.setTimeSpec(newSpec);
+    if (oldZone.isValid() && newZone.isValid() && oldZone != newZone) {
+        IncidenceBase::shiftTimes(oldZone, newZone);
+        d->mDtEnd = d->mDtEnd.toTimeZone(oldZone);
+        d->mDtEnd.setTimeZone(newZone);
         foreach (FreeBusyPeriod p, d->mBusyPeriods) {   //krazy:exclude=foreach
-            p.shiftTimes(oldSpec, newSpec);
+            p.shiftTimes(oldZone, newZone);
         }
     }
 }

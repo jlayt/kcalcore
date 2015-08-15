@@ -88,8 +88,8 @@ void TimesInIntervalTest::test()
 //Test that interval start and end are inclusive
 void TimesInIntervalTest::testSubDailyRecurrenceIntervalInclusive()
 {
-    const KDateTime start(QDate(2013, 03, 10), QTime(10, 0, 0), KDateTime::UTC);
-    const KDateTime end(QDate(2013, 03, 10), QTime(11, 0, 0), KDateTime::UTC);
+    const KDateTime start(QDate(2013, 03, 10), QTime(10, 0, 0), QTimeZone::utc());
+    const KDateTime end(QDate(2013, 03, 10), QTime(11, 0, 0), QTimeZone::utc());
 
     KCalCore::Event::Ptr event(new KCalCore::Event());
     event->setUid("event");
@@ -112,8 +112,8 @@ void TimesInIntervalTest::testSubDailyRecurrenceIntervalInclusive()
 //Test that the recurrence dtStart is used for calculation and not the interval start date
 void TimesInIntervalTest::testSubDailyRecurrence2()
 {
-    const KDateTime start(QDate(2013, 03, 10), QTime(10, 2, 3), KDateTime::UTC);
-    const KDateTime end(QDate(2013, 03, 10), QTime(13, 4, 5), KDateTime::UTC);
+    const KDateTime start(QDate(2013, 03, 10), QTime(10, 2, 3), QTimeZone::utc());
+    const KDateTime end(QDate(2013, 03, 10), QTime(13, 4, 5), QTimeZone::utc());
 
     KCalCore::Event::Ptr event(new KCalCore::Event());
     event->setUid("event");
@@ -135,8 +135,8 @@ void TimesInIntervalTest::testSubDailyRecurrence2()
 
 void TimesInIntervalTest::testSubDailyRecurrenceIntervalLimits()
 {
-    const KDateTime start(QDate(2013, 03, 10), QTime(10, 2, 3), KDateTime::UTC);
-    const KDateTime end(QDate(2013, 03, 10), QTime(12, 2, 3), KDateTime::UTC);
+    const KDateTime start(QDate(2013, 03, 10), QTime(10, 2, 3), QTimeZone::utc());
+    const KDateTime end(QDate(2013, 03, 10), QTime(12, 2, 3), QTimeZone::utc());
 
     KCalCore::Event::Ptr event(new KCalCore::Event());
     event->setUid("event");

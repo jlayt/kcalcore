@@ -28,68 +28,68 @@ using namespace KCalCore;
 
 void FreeBusyTest::testValidity()
 {
-    const KDateTime firstDateTime(QDate(2007, 7, 23), QTime(7, 0, 0), KDateTime::UTC);
+    const QDateTime firstDateTime(QDate(2007, 7, 23), QTime(7, 0, 0), QTimeZone::utc());
 
     FreeBusy fb1(
         firstDateTime,
-        KDateTime(QDate(2007, 7, 23), QTime(8, 0, 0), KDateTime::UTC));
+        QDateTime(QDate(2007, 7, 23), QTime(8, 0, 0), QTimeZone::utc()));
 
     QVERIFY(fb1.dtEnd() ==
-            KDateTime(QDate(2007, 7, 23), QTime(8, 0, 0), KDateTime::UTC));
+            QDateTime(QDate(2007, 7, 23), QTime(8, 0, 0), QTimeZone::utc()));
 }
 
 void FreeBusyTest::testAddSort()
 {
     Period::List periods;
 
-    const KDateTime firstq1DateTime(QDate(2007, 7, 23), QTime(7, 0, 0), KDateTime::UTC);
+    const QDateTime firstq1DateTime(QDate(2007, 7, 23), QTime(7, 0, 0), QTimeZone::utc());
     Period q1(
         firstq1DateTime,
-        KDateTime(QDate(2007, 7, 23), QTime(8, 0, 0), KDateTime::UTC));
+        QDateTime(QDate(2007, 7, 23), QTime(8, 0, 0), QTimeZone::utc()));
     periods.append(q1);
 
-    const KDateTime firstq2DateTime(QDate(2007, 8, 23), QTime(7, 0, 0), KDateTime::UTC);
+    const QDateTime firstq2DateTime(QDate(2007, 8, 23), QTime(7, 0, 0), QTimeZone::utc());
     Period q2(
         firstq2DateTime,
-        KDateTime(QDate(2007, 8, 23), QTime(8, 0, 0), KDateTime::UTC));
+        QDateTime(QDate(2007, 8, 23), QTime(8, 0, 0), QTimeZone::utc()));
     periods.append(q2);
 
-    const KDateTime firstq3DateTime(QDate(2007, 9, 23), QTime(7, 0, 0), KDateTime::UTC);
+    const QDateTime firstq3DateTime(QDate(2007, 9, 23), QTime(7, 0, 0), QTimeZone::utc());
     Period q3(
         firstq3DateTime,
-        KDateTime(QDate(2007, 9, 23), QTime(8, 0, 0), KDateTime::UTC));
+        QDateTime(QDate(2007, 9, 23), QTime(8, 0, 0), QTimeZone::utc()));
     periods.append(q3);
 
     FreeBusy fb1;
     fb1.addPeriods(periods);
 
-    const KDateTime firstfb1DateTime(QDate(2007, 10, 27), QTime(7, 0, 0), KDateTime::UTC);
+    const QDateTime firstfb1DateTime(QDate(2007, 10, 27), QTime(7, 0, 0), QTimeZone::utc());
     fb1.addPeriod(
         firstfb1DateTime,
-        KDateTime(QDate(2007, 10, 27), QTime(8, 0, 0), KDateTime::UTC));
+        QDateTime(QDate(2007, 10, 27), QTime(8, 0, 0), QTimeZone::utc()));
 
-    const KDateTime secondfb1DateTime(QDate(2007, 8, 27), QTime(7, 0, 0), KDateTime::UTC);
+    const QDateTime secondfb1DateTime(QDate(2007, 8, 27), QTime(7, 0, 0), QTimeZone::utc());
     fb1.addPeriod(
         secondfb1DateTime,
-        KDateTime(QDate(2007, 8, 27), QTime(8, 0, 0), KDateTime::UTC));
+        QDateTime(QDate(2007, 8, 27), QTime(8, 0, 0), QTimeZone::utc()));
 
-    const KDateTime thirdfb1DateTime(QDate(2007, 6, 27), QTime(7, 0, 0), KDateTime::UTC);
+    const QDateTime thirdfb1DateTime(QDate(2007, 6, 27), QTime(7, 0, 0), QTimeZone::utc());
     fb1.addPeriod(
         thirdfb1DateTime,
-        KDateTime(QDate(2007, 6, 27), QTime(8, 0, 0), KDateTime::UTC));
+        QDateTime(QDate(2007, 6, 27), QTime(8, 0, 0), QTimeZone::utc()));
 
     QVERIFY(fb1.busyPeriods().last().end() ==
-            KDateTime(QDate(2007, 10, 27), QTime(8, 0, 0), KDateTime::UTC));
+            QDateTime(QDate(2007, 10, 27), QTime(8, 0, 0), QTimeZone::utc()));
 
 }
 
 void FreeBusyTest::testAssign()
 {
-    const KDateTime firstDateTime(QDate(2007, 7, 23), QTime(7, 0, 0), KDateTime::UTC);
+    const QDateTime firstDateTime(QDate(2007, 7, 23), QTime(7, 0, 0), QTimeZone::utc());
 
     FreeBusy fb1(
         firstDateTime,
-        KDateTime(QDate(2007, 7, 23), QTime(8, 0, 0), KDateTime::UTC));
+        QDateTime(QDate(2007, 7, 23), QTime(8, 0, 0), QTimeZone::utc()));
 
     FreeBusy fb2 = fb1;
     QVERIFY(fb1 == fb2);
@@ -109,9 +109,9 @@ void FreeBusyTest::testAssign()
 
 void FreeBusyTest::testDataStream()
 {
-    const KDateTime firstDateTime(QDate(2007, 7, 23), QTime(7, 0, 0), KDateTime::UTC);
+    const QDateTime firstDateTime(QDate(2007, 7, 23), QTime(7, 0, 0), QTimeZone::utc());
     FreeBusy::Ptr fb1(new FreeBusy(firstDateTime,
-                                   KDateTime(QDate(2007, 7, 23), QTime(8, 0, 0), KDateTime::UTC)));
+                                   QDateTime(QDate(2007, 7, 23), QTime(8, 0, 0), QTimeZone::utc())));
 
     QByteArray byteArray;
     QDataStream out_stream(&byteArray, QIODevice::WriteOnly);

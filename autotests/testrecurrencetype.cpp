@@ -36,7 +36,7 @@
 
 using namespace KCalCore;
 
-static QString dumpTime(const KDateTime &dt, const KDateTime::Spec &viewSpec);
+static QString dumpTime(const KDateTime &dt, const QTimeZone &viewZone);
 
 int main(int argc, char **argv)
 {
@@ -79,16 +79,16 @@ int main(int argc, char **argv)
         outstream = new QTextStream(&outfile);
     }
 
-    MemoryCalendar::Ptr cal(new MemoryCalendar(KDateTime::UTC));
+    MemoryCalendar::Ptr cal(new MemoryCalendar(QTimeZone::utc()));
 
-    KDateTime::Spec viewSpec;
+    QTimeZone viewZone;
     FileStorage store(cal, input);
     if (!store.load()) {
         return 1;
     }
     QString tz = cal->nonKDECustomProperty("X-LibKCal-Testsuite-OutTZ");
     if (!tz.isEmpty()) {
-        viewSpec = KDateTime::Spec(KSystemTimeZones::zone(tz));
+        viewZone = QTimeZone(tz.toLatin1());
     }
 
     Incidence::List inc = cal->incidences();
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
                 ++i;
                 dt = incidence->recurrence()->getNextDateTime(dt);
                 if (dt.isValid()) {
-                    (*outstream) << dumpTime(dt, viewSpec) << endl;
+                    (*outstream) << dumpTime(dt, viewZone) << endl;
                 }
             }
         } else {
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
                 qDebug() << "-------------------------------------------";
                 dt = incidence->recurrence()->getNextDateTime(dt);
                 if (dt.isValid()) {
-                    qDebug() << " *~*~*~*~ Next date is:" << dumpTime(dt, viewSpec);
+                    qDebug() << " *~*~*~*~ Next date is:" << dumpTime(dt, viewZone);
                 }
             }
         }
@@ -135,18 +135,18 @@ int main(int argc, char **argv)
     return 0;
 }
 
-QString dumpTime(const KDateTime &dt, const KDateTime::Spec &viewSpec)
+QString dumpTime(const KDateTime &dt, const QTimeZone &viewZone)
 {
     if (!dt.isValid()) {
         return QString();
     }
-    KDateTime vdt = viewSpec.isValid() ? dt.toTimeSpec(viewSpec) : dt;
+    KDateTime vdt = viewZone.isValid() ? dt.toTimeZone(viewZone) : dt;
     QString format;
     format = QStringLiteral("%Y-%m-%dT%H:%M:%S");
     if (vdt.isSecondOccurrence()) {
         format += QStringLiteral(" %Z");
     }
-    if (vdt.timeSpec() != KDateTime::ClockTime) {
+    if (vdt.timeSpec() == QTimeZone::utc()) {
         format += QStringLiteral(" %:Z");
     }
     return vdt.toString(format);

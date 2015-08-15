@@ -137,14 +137,13 @@ bool Period::hasDuration() const
     return d->mHasDuration;
 }
 
-void Period::shiftTimes(const KDateTime::Spec &oldSpec,
-                        const KDateTime::Spec &newSpec)
+void Period::shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone)
 {
-    if (oldSpec.isValid() && newSpec.isValid() && oldSpec != newSpec) {
-        d->mStart = d->mStart.toTimeSpec(oldSpec);
-        d->mStart.setTimeSpec(newSpec);
-        d->mEnd = d->mEnd.toTimeSpec(oldSpec);
-        d->mEnd.setTimeSpec(newSpec);
+    if (oldZone.isValid() && newZone.isValid() && oldZone != newZone) {
+        d->mStart = d->mStart.toTimeZone(oldZone);
+        d->mStart.setTimeZone(newZone);
+        d->mEnd = d->mEnd.toTimeZone(oldZone);
+        d->mEnd.setTimeZone(newZone);
     }
 }
 

@@ -325,8 +325,7 @@ void CompatPre31::fixRecurrence(const Incidence::Ptr &incidence)
                 break;
             }
             if (!doNothing) {
-                duration = r->durationTo(
-                               KDateTime(end, QTime(0, 0, 0), incidence->dtStart().timeSpec()));
+                duration = r->durationTo(QDateTime(end, QTime(0, 0, 0), incidence->dtStart().timeZone()));
                 r->setDuration(duration);
             }
         }

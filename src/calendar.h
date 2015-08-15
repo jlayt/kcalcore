@@ -56,6 +56,7 @@ This API needs serious cleaning up:
 #include "todo.h"
 
 #include <QtCore/QObject>
+#include <QtCore/QTimeZone>
 
 namespace KCalCore
 {
@@ -139,16 +140,16 @@ public:
     typedef QSharedPointer<Calendar> Ptr;
 
     /**
-      Constructs a calendar with a specified time zone @p timeZoneid.
-      The time specification is used as the default for creating or
-      modifying incidences in the Calendar. The time specification does
+      Constructs a calendar with a specified time zone @p timeZone.
+      The time zone is used as the default for creating or
+      modifying incidences in the Calendar. The time zone does
       not alter existing incidences.
 
-      The constructor also calls setViewTimeSpec(@p timeSpec).
+      The constructor also calls setViewTimeZone(@p timeZone).
 
-      @param timeSpec time specification
+      @param timeZone time zone
     */
-    explicit Calendar(const KDateTime::Spec &timeSpec);
+    explicit Calendar(const QTimeZone &timeZone);
 
     /**
       Construct Calendar object using a time zone ID.
@@ -160,10 +161,10 @@ public:
 
       @param timeZoneId is a string containing a time zone ID, which is
       assumed to be valid.  If no time zone is found, the viewing time
-      specification is set to local clock time.
+      specification is set to the local time zone.
       @e Example: "Europe/Berlin"
     */
-    explicit Calendar(const QString &timeZoneId);
+    explicit Calendar(const QByteArray &timeZoneId);
 
     /**
       Destroys the calendar.
@@ -205,14 +206,14 @@ public:
     Person::Ptr owner() const;
 
     /**
-      Sets the default time specification (time zone, etc.) used for creating
+      Sets the default time zon used for creating
       or modifying incidences in the Calendar.
 
-      The method also calls setViewTimeSpec(@p timeSpec).
+      The method also calls setViewTimeZone(@p timeZone).
 
-      @param timeSpec time specification
+      @param timeZone time specification
     */
-    void setTimeSpec(const KDateTime::Spec &timeSpec);
+    void setTimeZone(const QTimeZone &timeZone);
 
     /**
        Get the time specification (time zone etc.) used for creating or
@@ -220,7 +221,7 @@ public:
 
        @return time specification
     */
-    KDateTime::Spec timeSpec() const;
+    QTimeZone timeZone() const;
 
     /**
       Sets the time zone ID used for creating or modifying incidences in the
@@ -231,11 +232,11 @@ public:
       @param timeZoneId is a string containing a time zone ID, which is
       assumed to be valid. The time zone ID is used to set the time zone
       for viewing Incidence date/times. If no time zone is found, the
-      viewing time specification is set to local clock time.
+      viewing time specification is set to local time.
       @e Example: "Europe/Berlin"
-      @see setTimeSpec()
+      @see setTimeZone()
     */
-    void setTimeZoneId(const QString &timeZoneId);
+    void setTimeZoneId(const QByteArray &timeZoneId);
 
     /**
       Returns the time zone ID used for creating or modifying incidences in
@@ -244,29 +245,29 @@ public:
       @return the string containing the time zone ID, or empty string if the
               creation/modification time specification is not a time zone.
     */
-    QString timeZoneId() const;
+    QByteArray timeZoneId() const;
 
     /**
-      Notes the time specification which the client application intends to
+      Notes the time zone which the client application intends to
       use for viewing the incidences in this calendar. This is simply a
       convenience method which makes a note of the new time zone so that
-      it can be read back by viewTimeSpec(). The client application must
+      it can be read back by viewTimeZone(). The client application must
       convert date/time values to the desired time zone itself.
 
       The time specification is not used in any way by the Calendar or its
       incidences; it is solely for use by the client application.
 
-      @param timeSpec time specification
+      @param timeZone time zone
 
-      @see viewTimeSpec()
+      @see viewTimeZone()
     */
-    void setViewTimeSpec(const KDateTime::Spec &timeSpec) const;
+    void setViewTimeZone(const QTimeZone &timeZone) const;
 
     /**
       Notes the time zone Id which the client application intends to use for
       viewing the incidences in this calendar. This is simply a convenience
       method which makes a note of the new time zone so that it can be read
-      back by viewTimeId(). The client application must convert date/time
+      back by viewTimeZoneId(). The client application must convert date/time
       values to the desired time zone itself.
 
       The Id is not used in any way by the Calendar or its incidences.
@@ -275,28 +276,28 @@ public:
       @param timeZoneId is a string containing a time zone ID, which is
       assumed to be valid. The time zone ID is used to set the time zone
       for viewing Incidence date/times. If no time zone is found, the
-      viewing time specification is set to local clock time.
+      viewing time specification is set to the local time zone.
       @e Example: "Europe/Berlin"
 
       @see viewTimeZoneId()
     */
-    void setViewTimeZoneId(const QString &timeZoneId) const;
+    void setViewTimeZoneId(const QByteArray &timeZoneId) const;
 
     /**
-      Returns the time specification used for viewing the incidences in
-      this calendar. This simply returns the time specification last
-      set by setViewTimeSpec().
-      @see setViewTimeSpec().
+      Returns the time zone used for viewing the incidences in
+      this calendar. This simply returns the time zone last
+      set by setViewTimeZone().
+      @see setViewTimeZone().
     */
-    KDateTime::Spec viewTimeSpec() const;
+    QTimeZone viewTimeZone() const;
 
     /**
       Returns the time zone Id used for viewing the incidences in this
       calendar. This simply returns the time specification last set by
-      setViewTimeSpec().
+      setViewTimeZone().
       @see setViewTimeZoneId().
     */
-    QString viewTimeZoneId() const;
+    QByteArray viewTimeZoneId() const;
 
     /**
       Shifts the times of all incidences so that they appear at the same clock
@@ -304,17 +305,17 @@ public:
       time zone rather than from the actual incidence time zone.
 
       For example, shifting an incidence whose start time is 09:00 America/New York,
-      using an old viewing time zone (@p oldSpec) of Europe/London, to a new time
-      zone (@p newSpec) of Europe/Paris, will result in the time being shifted
+      using an old viewing time zone (@p oldZone) of Europe/London, to a new time
+      zone (@p newZone) of Europe/Paris, will result in the time being shifted
       from 14:00 (which is the London time of the incidence start) to 14:00 Paris
       time.
 
-      @param oldSpec the time specification which provides the clock times
-      @param newSpec the new time specification
+      @param oldZone the time zone which provides the clock times
+      @param newZone the new time zone
 
       @see isLocalTime()
     */
-    void shiftTimes(const KDateTime::Spec &oldSpec, const KDateTime::Spec &newSpec);
+    void shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone);
 
     /**
       Returns the time zone collection used by the calendar.
@@ -671,7 +672,7 @@ public:
       @param incidence is a pointer to a recurring Incidence.
       @param date is the QDate within the recurring Incidence on which
       the dissociation will be performed.
-      @param spec is the spec in which the @a date is formulated.
+      @param timeZone is the time zone in which the @a date is formulated.
       @param single is a flag meaning that a new Incidence should be created
       from the recurring Incidences after @a date.
 
@@ -680,7 +681,7 @@ public:
     */
     KCALCORE_DEPRECATED Incidence::Ptr dissociateOccurrence(
         const Incidence::Ptr &incidence, const QDate &date,
-        const KDateTime::Spec &spec, bool single = true);
+        const QTimeZone &timeZone, bool single = true);
     /**
       Creates an exception for an occurrence from a recurring Incidence.
 
@@ -768,8 +769,8 @@ public:
 
       @param start is the starting date.
       @param end is the ending date.
-      @param timeSpec time zone etc. to interpret @p start and @p end,
-                      or the calendar's default time spec if none is specified
+      @param timeZone time zone to interpret @p start and @p end,
+                      or the calendar's default time zone if none is specified
       @param inclusive if true only Events which are completely included
       within the date range are returned.
 
@@ -777,7 +778,7 @@ public:
       date range.
     */
     Event::List events(const QDate &start, const QDate &end,
-                       const KDateTime::Spec &timeSpec = KDateTime::Spec(),
+                       const QTimeZone &timeZone = QTimeZone(),
                        bool inclusive = false) const;
 
     /**
@@ -786,15 +787,15 @@ public:
       @a sortDirection.
 
       @param date request filtered Event list for this QDate only.
-      @param timeSpec time zone etc. to interpret @p start and @p end,
-                      or the calendar's default time spec if none is specified
+      @param timeZone time zone to interpret @p start and @p end,
+                      or the calendar's default time zone if none is specified
       @param sortField specifies the EventSortField.
       @param sortDirection specifies the SortDirection.
 
       @return the list of sorted, filtered Events occurring on @a date.
     */
     Event::List events(const QDate &date,
-                       const KDateTime::Spec &timeSpec = KDateTime::Spec(),
+                       const QTimeZone &timeZone = QTimeZone(),
                        EventSortField sortField = EventSortUnsorted,
                        SortDirection sortDirection = SortDirectionAscending) const;
 
@@ -826,8 +827,8 @@ public:
 
       @param start is the starting date
       @param end is the ending date
-      @param timeSpec time zone etc. to interpret @p start and @p end,
-                      or the calendar's default time spec if none is specified
+      @param timeZone time zone to interpret @p start and @p end,
+                      or the calendar's default time zone if none is specified
       @param inclusive if true only Events which are completely included
       within the date range are returned.
 
@@ -835,7 +836,7 @@ public:
       date range.
     */
     virtual Event::List rawEvents(const QDate &start, const QDate &end,
-                                  const KDateTime::Spec &timeSpec = KDateTime::Spec(),
+                                  const QTimeZone &timeZone = QTimeZone(),
                                   bool inclusive = false) const = 0;
 
     /**
@@ -844,8 +845,8 @@ public:
       @a sortDirection.
 
       @param date request unfiltered Event list for this QDate only
-      @param timeSpec time zone etc. to interpret @p date,
-                      or the calendar's default time spec if none is specified
+      @param timeZone time zone to interpret @p date,
+                      or the calendar's default time zone if none is specified
       @param sortField specifies the EventSortField
       @param sortDirection specifies the SortDirection
 
@@ -853,7 +854,7 @@ public:
     */
     virtual Event::List rawEventsForDate(
         const QDate &date,
-        const KDateTime::Spec &timeSpec = KDateTime::Spec(),
+        const QTimeZone &timeZone = QTimeZone(),
         EventSortField sortField = EventSortUnsorted,
         SortDirection sortDirection = SortDirectionAscending) const = 0;
 
@@ -982,8 +983,8 @@ public:
 
       @param start is the starting date
       @param end is the ending date
-      @param timespec time zone etc. to interpret @p start and @p end,
-                      or the calendar's default time spec if none is specified
+      @param timeZone time zone to interpret @p start and @p end,
+                      or the calendar's default time zone if none is specified
       @param inclusive if true only Todos which are completely included
       within the date range are returned.
 
@@ -991,7 +992,7 @@ public:
       date range.
     */
     virtual Todo::List todos(const QDate &start, const QDate &end,
-                             const KDateTime::Spec &timespec = KDateTime::Spec(),
+                             const QTimeZone &timeZone = QTimeZone(),
                              bool inclusive = false) const;
 
     /**
@@ -1020,8 +1021,8 @@ public:
 
       @param start is the starting date
       @param end is the ending date
-      @param timespec time zone etc. to interpret @p start and @p end,
-                      or the calendar's default time spec if none is specified
+      @param timeZone time zone to interpret @p start and @p end,
+                      or the calendar's default time zone if none is specified
       @param inclusive if true only Todos which are completely included
       within the date range are returned.
 
@@ -1029,7 +1030,7 @@ public:
       date range.
     */
     virtual Todo::List rawTodos(const QDate &start, const QDate &end,
-                                const KDateTime::Spec &timespec = KDateTime::Spec(),
+                                const QTimeZone &timeZone = QTimeZone(),
                                 bool inclusive = false) const = 0;
 
     /**
@@ -1378,11 +1379,10 @@ protected:
     void incidenceUpdated(const QString &uid, const KDateTime &recurrenceId) Q_DECL_OVERRIDE;
 
     /**
-      Let Calendar subclasses set the time specification.
-      @param timeSpec is the time specification (time zone, etc.) for
-                      viewing Incidence dates.\n
+      Let Calendar subclasses set the time zone.
+      @param timeZone is the time time zone for viewing Incidence dates.\n
     */
-    virtual void doSetTimeSpec(const KDateTime::Spec &timeSpec);
+    virtual void doSetTimeZone(const QTimeZone &timeZone);
 
     /**
       Let Calendar subclasses notify that they inserted an Incidence.

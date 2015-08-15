@@ -124,7 +124,7 @@ bool VCalFormat::load(const Calendar::Ptr &calendar, const QString &fileName)
     // any other top-level calendar stuff should be added/initialized here
 
     // put all vobjects into their proper places
-    QString savedTimeZoneId = d->mCalendar->timeZoneId();
+    QByteArray savedTimeZoneId = d->mCalendar->timeZoneId();
     populate(vcal, false, fileName);
     d->mCalendar->setTimeZoneId(savedTimeZoneId);
 
@@ -154,8 +154,8 @@ bool VCalFormat::save(const Calendar::Ptr &calendar, const QString &fileName)
     Todo::List todoList = d->mCalendar->rawTodos();
     Todo::List::ConstIterator it;
     for (it = todoList.constBegin(); it != todoList.constEnd(); ++it) {
-        if ((*it)->dtStart().timeZone().name().mid(0, 4) == QLatin1String("VCAL")) {
-            ICalTimeZone zone = tzlist->zone((*it)->dtStart().timeZone().name());
+        if ((*it)->dtStart().timeZone().id().mid(0, 4) == QByteArray("VCAL")) {
+            ICalTimeZone zone = tzlist->zone(QString::fromLatin1((*it)->dtStart().timeZone().id()));
             if (zone.isValid()) {
                 QByteArray timezone = zone.vtimezone();
                 addPropValue(vcal, VCTimeZoneProp, parseTZ(timezone).toLocal8Bit());
@@ -173,8 +173,8 @@ bool VCalFormat::save(const Calendar::Ptr &calendar, const QString &fileName)
     Event::List events = d->mCalendar->rawEvents();
     Event::List::ConstIterator it2;
     for (it2 = events.constBegin(); it2 != events.constEnd(); ++it2) {
-        if ((*it2)->dtStart().timeZone().name().mid(0, 4) == QLatin1String("VCAL")) {
-            ICalTimeZone zone = tzlist->zone((*it2)->dtStart().timeZone().name());
+        if ((*it2)->dtStart().timeZone().id().mid(0, 4) == QByteArray("VCAL")) {
+            ICalTimeZone zone = tzlist->zone(QString::fromLatin1((*it2)->dtStart().timeZone().id()));
             if (zone.isValid()) {
                 QByteArray timezone = zone.vtimezone();
                 addPropValue(vcal, VCTimeZoneProp, parseTZ(timezone).toLocal8Bit());
@@ -225,7 +225,7 @@ bool VCalFormat::fromRawString(const Calendar::Ptr &calendar, const QByteArray &
     initPropIterator(&i, vcal);
 
     // put all vobjects into their proper places
-    QString savedTimeZoneId = d->mCalendar->timeZoneId();
+    QByteArray savedTimeZoneId = d->mCalendar->timeZoneId();
     populate(vcal, deleted, notebook);
     d->mCalendar->setTimeZoneId(savedTimeZoneId);
 
@@ -259,8 +259,8 @@ QString VCalFormat::toString(const Calendar::Ptr &calendar,
             if (notebook.isEmpty() ||
                     (!calendar->notebook(*it).isEmpty() &&
                      notebook.endsWith(calendar->notebook(*it)))) {
-                if ((*it)->dtStart().timeZone().name().mid(0, 4) == QLatin1String("VCAL")) {
-                    ICalTimeZone zone = tzlist->zone((*it)->dtStart().timeZone().name());
+                if ((*it)->dtStart().timeZone().id().mid(0, 4) == QByteArray("VCAL")) {
+                    ICalTimeZone zone = tzlist->zone(QString::fromLatin1((*it)->dtStart().timeZone().id()));
                     if (zone.isValid()) {
                         QByteArray timezone = zone.vtimezone();
                         addPropValue(vcal, VCTimeZoneProp, parseTZ(timezone).toUtf8());
@@ -286,8 +286,8 @@ QString VCalFormat::toString(const Calendar::Ptr &calendar,
             if (notebook.isEmpty() ||
                     (!calendar->notebook(*it2).isEmpty() &&
                      notebook.endsWith(calendar->notebook(*it2)))) {
-                if ((*it2)->dtStart().timeZone().name().mid(0, 4) == QLatin1String("VCAL")) {
-                    ICalTimeZone zone = tzlist->zone((*it2)->dtStart().timeZone().name());
+                if ((*it2)->dtStart().timeZone().id().mid(0, 4) == QByteArray("VCAL")) {
+                    ICalTimeZone zone = tzlist->zone(QString::fromLatin1((*it2)->dtStart().timeZone().id()));
                     if (zone.isValid()) {
                         QByteArray timezone = zone.vtimezone();
                         addPropValue(vcal, VCTimeZoneProp, parseTZ(timezone).toUtf8());
@@ -2066,7 +2066,7 @@ QString VCalFormat::kDateTimeToISO(const KDateTime &dt, bool zulu)
     if (zulu) {
         tmpDT = dt.toUtc().dateTime();
     } else {
-        tmpDT = dt.toTimeSpec(d->mCalendar->timeSpec()).dateTime();
+        tmpDT = dt.toTimeZone(d->mCalendar->timeZone()).dateTime();
     }
     tmpStr.sprintf("%.2d%.2d%.2dT%.2d%.2d%.2d",
                    tmpDT.date().year(), tmpDT.date().month(),
@@ -2098,9 +2098,9 @@ KDateTime VCalFormat::ISOToKDateTime(const QString &dtStr)
     if (tmpDate.isValid() && tmpTime.isValid()) {
         // correct for GMT if string is in Zulu format
         if (dtStr.at(dtStr.length() - 1) == QLatin1Char('Z')) {
-            return KDateTime(tmpDate, tmpTime, KDateTime::UTC);
+            return QDateTime(tmpDate, tmpTime, QTimeZone::utc());
         } else {
-            return KDateTime(tmpDate, tmpTime, d->mCalendar->timeSpec());
+            return QDateTime(tmpDate, tmpTime, d->mCalendar->timeZone());
         }
     } else {
         return KDateTime();
@@ -2190,7 +2190,7 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
     VObject *curVO, *curVOProp;
     Event::Ptr anEvent;
     bool hasTimeZone = false; //The calendar came with a TZ and not UTC
-    KDateTime::Spec previousSpec; //If we add a new TZ we should leave the spec as it was before
+    QTimeZone previousZone; //If we add a new TZ we should leave the zone as it was before
 
     if ((curVO = isAPropertyOf(vcal, ICMethodProp)) != 0) {
         char *methodType = 0;
@@ -2307,8 +2307,8 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
             if (!zone.isValid()) {
                 qCDebug(KCALCORE_LOG) << "zone is not valid, parsing error" << tzList;
             } else {
-                previousSpec = d->mCalendar->timeSpec();
-                d->mCalendar->setTimeZoneId(name);
+                previousZone = d->mCalendar->timeZone();
+                d->mCalendar->setTimeZoneId(name.toLatin1());
                 hasTimeZone = true;
             }
         } else {
@@ -2358,11 +2358,9 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
                     //we go. If there is a TZ in the VCALENDAR even if the dtStart
                     //and dtend are in UTC, clients interpret it using also the TZ defined
                     //in the Calendar. I know it sounds braindead but oh well
-                    int utcOffSet = anEvent->dtStart().utcOffset();
-                    KDateTime dtStart(anEvent->dtStart().dateTime().addSecs(utcOffSet),
-                                      d->mCalendar->timeSpec());
-                    KDateTime dtEnd(anEvent->dtEnd().dateTime().addSecs(utcOffSet),
-                                    d->mCalendar->timeSpec());
+                    int utcOffSet = anEvent->dtStart().offsetFromUtc();
+                    QDateTime dtStart(anEvent->dtStart().dateTime().addSecs(utcOffSet).toTimeZone(d->mCalendar->timeZone()));
+                    QDateTime dtEnd(anEvent->dtEnd().dateTime().addSecs(utcOffSet).toTimeZone(d->mCalendar->timeZone()));
                     anEvent->setDtStart(dtStart);
                     anEvent->setDtEnd(dtEnd);
                 }
@@ -2399,13 +2397,11 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
                     //we go. If there is a TZ in the VCALENDAR even if the dtStart
                     //and dtend are in UTC, clients interpret it usint alse the TZ defined
                     //in the Calendar. I know it sounds braindead but oh well
-                    int utcOffSet = aTodo->dtStart().utcOffset();
-                    KDateTime dtStart(aTodo->dtStart().dateTime().addSecs(utcOffSet),
-                                      d->mCalendar->timeSpec());
+                    int utcOffSet = aTodo->dtStart().offsetFromUtc();
+                    QDateTime dtStart(aTodo->dtStart().dateTime().addSecs(utcOffSet).toTimeZone(d->mCalendar->timeZone()));
                     aTodo->setDtStart(dtStart);
                     if (aTodo->hasDueDate()) {
-                        KDateTime dtDue(aTodo->dtDue().dateTime().addSecs(utcOffSet),
-                                        d->mCalendar->timeSpec());
+                        QDateTime dtDue(aTodo->dtDue().dateTime().addSecs(utcOffSet).toTimeZone(d->mCalendar->timeZone()));
                         aTodo->setDtDue(dtDue);
                     }
                 }
@@ -2459,7 +2455,7 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
 
     //Now lets put the TZ back as it was if we have changed it.
     if (hasTimeZone) {
-        d->mCalendar->setTimeSpec(previousSpec);
+        d->mCalendar->setTimeZone(previousZone);
     }
 
 }

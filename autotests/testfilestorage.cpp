@@ -31,7 +31,7 @@ using namespace KCalCore;
 
 void FileStorageTest::testValidity()
 {
-    MemoryCalendar::Ptr cal(new MemoryCalendar(KDateTime::UTC));
+    MemoryCalendar::Ptr cal(new MemoryCalendar(QTimeZone::utc()));
     FileStorage fs(cal, QStringLiteral("fred.ics"));
     QCOMPARE(fs.fileName(), QStringLiteral("fred.ics"));
     QCOMPARE(fs.calendar().data(), cal.data());

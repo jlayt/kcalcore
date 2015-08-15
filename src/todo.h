@@ -35,6 +35,8 @@
 #include "incidence.h"
 #include "supertrait.h"
 
+class QTimeZone;
+
 namespace KCalCore
 {
 
@@ -243,8 +245,7 @@ public:
     /**
       @copydoc IncidenceBase::shiftTimes()
     */
-    void shiftTimes(const KDateTime::Spec &oldSpec,
-                    const KDateTime::Spec &newSpec) Q_DECL_OVERRIDE;
+    void shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone) Q_DECL_OVERRIDE;
 
     /**
       @copydoc IncidenceBase::setAllDay().
@@ -270,10 +271,10 @@ public:
       the recur start and today.
 
       @param date is the date to check.
-      @param timeSpec is the
+      @param timeZone is the time zone to use
     */
     bool recursOn(const QDate &date,
-                  const KDateTime::Spec &timeSpec) const Q_DECL_OVERRIDE;
+                  const QTimeZone &timeZone) const Q_DECL_OVERRIDE;
 
     /**
       Returns true if this todo is overdue (e.g. due date is lower than today

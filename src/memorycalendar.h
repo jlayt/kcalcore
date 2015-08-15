@@ -35,6 +35,8 @@
 #include "kcalcore_export.h"
 #include "calendar.h"
 
+#include <QTimeZone>
+
 namespace KCalCore
 {
 
@@ -54,14 +56,14 @@ public:
     typedef QSharedPointer<MemoryCalendar> Ptr;
 
     /**
-      @copydoc Calendar::Calendar(const KDateTime::Spec &)
+      @copydoc Calendar::Calendar(const QTimeZone &)
     */
-    explicit MemoryCalendar(const KDateTime::Spec &timeSpec);
+    explicit MemoryCalendar(const QTimeZone &timeZone);
 
     /**
-      @copydoc Calendar::Calendar(const QString &)
+      @copydoc Calendar::Calendar(const QByteArray &)
     */
-    explicit MemoryCalendar(const QString &timeZoneId);
+    explicit MemoryCalendar(const QByteArray &timeZoneId);
 
     /**
       @copydoc Calendar::~Calendar()
@@ -113,25 +115,25 @@ public:
         SortDirection sortDirection = SortDirectionAscending) const Q_DECL_OVERRIDE;
 
     /**
-      @copydoc Calendar::rawEvents(const QDate &, const QDate &, const KDateTime::Spec &, bool)const
+      @copydoc Calendar::rawEvents(const QDate &, const QDate &, const QTimeZone &, bool)const
     */
     Event::List rawEvents(const QDate &start, const QDate &end,
-                          const KDateTime::Spec &timeSpec = KDateTime::Spec(),
+                          const QTimeZone &timeZone = QTimeZone(),
                           bool inclusive = false) const Q_DECL_OVERRIDE;
 
     /**
       Returns an unfiltered list of all Events which occur on the given date.
 
       @param date request unfiltered Event list for this QDate only.
-      @param timeSpec time zone etc. to interpret @p date, or the calendar's
-                      default time spec if none is specified
+      @param timeZone time zone to interpret @p date, or the calendar's
+                      default time zone if none is specified
       @param sortField specifies the EventSortField.
       @param sortDirection specifies the SortDirection.
 
       @return the list of unfiltered Events occurring on the specified QDate.
     */
     Event::List rawEventsForDate(
-        const QDate &date, const KDateTime::Spec &timeSpec = KDateTime::Spec(),
+        const QDate &date, const QTimeZone &timeZone = QTimeZone(),
         EventSortField sortField = EventSortUnsorted,
         SortDirection sortDirection = SortDirectionAscending) const Q_DECL_OVERRIDE;
 
@@ -200,11 +202,11 @@ public:
         SortDirection sortDirection = SortDirectionAscending) const Q_DECL_OVERRIDE;
 
     /**
-       @copydoc Calendar::rawTodos(const QDate &, const QDate &, const KDateTime::Spec &, bool)const
+       @copydoc Calendar::rawTodos(const QDate &, const QDate &, const QTimeZone &, bool)const
     */
     Todo::List rawTodos(
         const QDate &start, const QDate &end,
-        const KDateTime::Spec &timespec = KDateTime::Spec(),
+        const QTimeZone &timeZone = QTimeZone(),
         bool inclusive = false) const Q_DECL_OVERRIDE;
 
     /**

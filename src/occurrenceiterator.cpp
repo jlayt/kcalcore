@@ -111,7 +111,7 @@ public:
                 KDateTime incidenceRecStart = inc->dateTime(Incidence::RoleRecurrenceStart);
                 foreach (const Incidence::Ptr &exception, calendar.instances(inc)) {
                     if (incidenceRecStart.isValid()) {
-                        recurrenceIds.insert(exception->recurrenceId().toTimeSpec(incidenceRecStart.timeSpec()), exception);
+                        recurrenceIds.insert(exception->recurrenceId().toTimeZone(incidenceRecStart.timeZone()), exception);
                     }
                 }
                 const bool isAllDay = inc->allDay();
@@ -186,12 +186,12 @@ OccurrenceIterator::OccurrenceIterator(const Calendar &calendar,
     d->start = start;
     d->end = end;
 
-    Event::List events = calendar.rawEvents(start.date(), end.date(), start.timeSpec());
+    Event::List events = calendar.rawEvents(start.date(), end.date(), start.timeZone());
     if (calendar.filter()) {
         calendar.filter()->apply(&events);
     }
 
-    Todo::List todos = calendar.rawTodos(start.date(), end.date(), start.timeSpec());
+    Todo::List todos = calendar.rawTodos(start.date(), end.date(), start.timeZone());
     if (calendar.filter()) {
         calendar.filter()->apply(&todos);
     }
@@ -199,7 +199,7 @@ OccurrenceIterator::OccurrenceIterator(const Calendar &calendar,
     Journal::List journals;
     const Journal::List allJournals = calendar.rawJournals();
     foreach (const KCalCore::Journal::Ptr &journal, allJournals) {
-        const QDate journalStart = journal->dtStart().toTimeSpec(start.timeSpec()).date();
+        const QDate journalStart = journal->dtStart().toTimeZone(start.timeZone()).date();
         if (journal->dtStart().isValid() &&
                 journalStart >= start.date() &&
                 journalStart <= end.date()) {

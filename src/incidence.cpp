@@ -398,15 +398,14 @@ void Incidence::setDtStart(const KDateTime &dt)
     IncidenceBase::setDtStart(dt);
 }
 
-void Incidence::shiftTimes(const KDateTime::Spec &oldSpec,
-                           const KDateTime::Spec &newSpec)
+void Incidence::shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone)
 {
-    IncidenceBase::shiftTimes(oldSpec, newSpec);
+    IncidenceBase::shiftTimes(oldZone, newZone);
     if (d->mRecurrence) {
-        d->mRecurrence->shiftTimes(oldSpec, newSpec);
+        d->mRecurrence->shiftTimes(oldZone, newZone);
     }
     for (int i = 0, end = d->mAlarms.count();  i < end;  ++i) {
-        d->mAlarms[i]->shiftTimes(oldSpec, newSpec);
+        d->mAlarms[i]->shiftTimes(oldZone, newZone);
     }
 }
 
@@ -585,10 +584,9 @@ bool Incidence::recurs() const
     }
 }
 
-bool Incidence::recursOn(const QDate &date,
-                         const KDateTime::Spec &timeSpec) const
+bool Incidence::recursOn(const QDate &date, const QTimeZone &timeZone) const
 {
-    return d->mRecurrence && d->mRecurrence->recursOn(date, timeSpec);
+    return d->mRecurrence && d->mRecurrence->recursOn(date, timeZone);
 }
 
 bool Incidence::recursAt(const KDateTime &qdt) const
@@ -596,8 +594,7 @@ bool Incidence::recursAt(const KDateTime &qdt) const
     return d->mRecurrence && d->mRecurrence->recursAt(qdt);
 }
 
-QList<KDateTime> Incidence::startDateTimesForDate(const QDate &date,
-        const KDateTime::Spec &timeSpec) const
+QList<QDateTime> Incidence::startDateTimesForDate(const QDate &date, const QTimeZone &timeZone) const
 {
     KDateTime start = dtStart();
     KDateTime end = dateTime(RoleEndRecurrenceBase);
@@ -610,9 +607,9 @@ QList<KDateTime> Incidence::startDateTimesForDate(const QDate &date,
     }
 
     // if the incidence doesn't recur,
-    KDateTime kdate(date, timeSpec);
+    QDateTime dt = QDateTime(date, QTime(0, 0, 0, 1), timeZone);
     if (!recurs()) {
-        if (!(start > kdate || end < kdate)) {
+        if (!(start > dt || end < dt)) {
             result << start;
         }
         return result;
@@ -623,11 +620,11 @@ QList<KDateTime> Incidence::startDateTimesForDate(const QDate &date,
     QDate tmpday(date.addDays(-days - 1));
     KDateTime tmp;
     while (tmpday <= date) {
-        if (recurrence()->recursOn(tmpday, timeSpec)) {
-            QList<QTime> times = recurrence()->recurTimesOn(tmpday, timeSpec);
+        if (recurrence()->recursOn(tmpday, timeZone)) {
+            QList<QTime> times = recurrence()->recurTimesOn(tmpday, timeZone);
             foreach (const QTime &time, times) {
-                tmp = KDateTime(tmpday, time, start.timeSpec());
-                if (endDateForStart(tmp) >= kdate) {
+                tmp = QDateTime(tmpday, time, start.timeZone());
+                if (endDateForStart(tmp) >= dt) {
                     result << tmp;
                 }
             }
@@ -662,11 +659,11 @@ QList<KDateTime> Incidence::startDateTimesForDateTime(const KDateTime &datetime)
     QDate tmpday(datetime.date().addDays(-days - 1));
     KDateTime tmp;
     while (tmpday <= datetime.date()) {
-        if (recurrence()->recursOn(tmpday, datetime.timeSpec())) {
+        if (recurrence()->recursOn(tmpday, datetime.timeZone())) {
             // Get the times during the day (in start date's time zone) when recurrences happen
-            QList<QTime> times = recurrence()->recurTimesOn(tmpday, start.timeSpec());
+            QList<QTime> times = recurrence()->recurTimesOn(tmpday, start.timeZone());
             foreach (const QTime &time, times) {
-                tmp = KDateTime(tmpday, time, start.timeSpec());
+                tmp = QDateTime(tmpday, time, start.timeZone());
                 if (!(tmp > datetime || endDateForStart(tmp) < datetime)) {
                     result << tmp;
                 }

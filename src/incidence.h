@@ -38,6 +38,7 @@
 #include "recurrence.h"
 
 #include <QtCore/QMetaType>
+#include <QtCore/QTimeZone>
 
 //@cond PRIVATE
 // Value used to signal invalid/unset latitude or longitude.
@@ -225,8 +226,7 @@ public:
     /**
       @copydoc IncidenceBase::shiftTimes()
     */
-    void shiftTimes(const KDateTime::Spec &oldSpec,
-                    const KDateTime::Spec &newSpec) Q_DECL_OVERRIDE;
+    void shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone) Q_DECL_OVERRIDE;
 
     /**
       Sets the incidence description.
@@ -448,7 +448,7 @@ public:
     /**
       @copydoc Recurrence::recursOn()
     */
-    virtual bool recursOn(const QDate &date, const KDateTime::Spec &timeSpec) const;
+    virtual bool recursOn(const QDate &date, const QTimeZone &timeZone) const;
 
     /**
       @copydoc Recurrence::recursAt()
@@ -461,14 +461,14 @@ public:
       after the given date).
 
       @param date the date when the incidence should occur
-      @param timeSpec time specification for @p date.
+      @param timeZone time zone for @p date.
       @return the start date/time of all occurrences that overlap with the
       given date; an empty list if the incidence does not overlap with the
       date at all.
     */
     virtual QList<KDateTime> startDateTimesForDate(
         const QDate &date,
-        const KDateTime::Spec &timeSpec = KDateTime::LocalZone) const;
+        const QTimeZone &timeZone = QTimeZone::systemTimeZone()) const;
 
     /**
       Calculates the start date/time for all recurrences that happen at the

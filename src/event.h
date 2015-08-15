@@ -29,6 +29,9 @@
 #define KCALCORE_EVENT_H
 
 #include "kcalcore_export.h"
+
+#include <QTimeZone>
+
 #include "incidence.h"
 #include "supertrait.h"
 
@@ -147,17 +150,16 @@ public:
       otherwise returns false. Other occurrences might have a different span due to day light
       savings changes.
 
-      @param spec If set, looks if the event is multiday for the given spec.
-      If not set, looks if event this multiday for its spec.
+      @param timeZone If set, looks if the event is multiday for the given time zone.
+      If not set, looks if event this multiday for its time zone.
     */
-    bool isMultiDay(const KDateTime::Spec &spec = KDateTime::Spec()) const;
+    bool isMultiDay(const QTimeZone &timeZone = QTimeZone()) const;
 
     /**
       @copydoc
       IncidenceBase::shiftTimes()
     */
-    void shiftTimes(const KDateTime::Spec &oldSpec,
-                    const KDateTime::Spec &newSpec) Q_DECL_OVERRIDE;
+    void shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone) Q_DECL_OVERRIDE;
 
     /**
       Sets the event's time transparency level.

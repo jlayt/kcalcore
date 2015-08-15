@@ -39,6 +39,7 @@
 #include "visitor.h"
 
 #include <QTime>
+#include <QTimeZone>
 #include "kcalcore_debug.h"
 #include <QUrl>
 
@@ -342,12 +343,11 @@ void IncidenceBase::setAllDay(bool f)
     updated();
 }
 
-void IncidenceBase::shiftTimes(const KDateTime::Spec &oldSpec,
-                               const KDateTime::Spec &newSpec)
+void IncidenceBase::shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone)
 {
     update();
-    d->mDtStart = d->mDtStart.toTimeSpec(oldSpec);
-    d->mDtStart.setTimeSpec(newSpec);
+    d->mDtStart = d->mDtStart.toTimeZone(oldZone);
+    d->mDtStart.setTimeZone(newZone);
     d->mDirtyFields.insert(FieldDtStart);
     d->mDirtyFields.insert(FieldDtEnd);
     updated();

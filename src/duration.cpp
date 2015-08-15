@@ -34,6 +34,7 @@
 #include <KDateTime>
 
 #include <QTime>
+#include <QTimeZone>
 
 using namespace KCalCore;
 
@@ -62,7 +63,7 @@ Duration::Duration()
 Duration::Duration(const KDateTime &start, const KDateTime &end)
     : d(new KCalCore::Duration::Private())
 {
-    if (start.time() == end.time() && start.timeSpec() == end.timeSpec()) {
+    if (start.time() == end.time() && start.timeZone() == end.timeZone()) {
         d->mDuration = start.daysTo(end);
         d->mDaily = true;
     } else {
@@ -75,7 +76,7 @@ Duration::Duration(const KDateTime &start, const KDateTime &end, Type type)
     : d(new KCalCore::Duration::Private())
 {
     if (type == Days) {
-        KDateTime endSt(end.toTimeSpec(start));
+        QDateTime endSt(end.toTimeZone(start.timeZone()));
         d->mDuration = start.daysTo(endSt);
         if (d->mDuration) {
             // Round down to whole number of days if necessary

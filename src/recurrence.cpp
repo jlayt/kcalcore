@@ -28,6 +28,7 @@
 
 #include <QtCore/QBitArray>
 #include <QtCore/QTime>
+#include <QtCore/QTimeZone>
 
 using namespace KCalCore;
 
@@ -329,10 +330,10 @@ ushort Recurrence::recurrenceType(const RecurrenceRule *rrule)
     return rOther;
 }
 
-bool Recurrence::recursOn(const QDate &qd, const KDateTime::Spec &timeSpec) const
+bool Recurrence::recursOn(const QDate &qd, const QTimeZone &timeZone) const
 {
     // Don't waste time if date is before the start of the recurrence
-    if (KDateTime(qd, QTime(23, 59, 59), timeSpec) < d->mStartDateTime) {
+    if (QDateTime(qd, QTime(23, 59, 59), timeZone) < d->mStartDateTime) {
         return false;
     }
 
@@ -347,7 +348,7 @@ bool Recurrence::recursOn(const QDate &qd, const KDateTime::Spec &timeSpec) cons
     // since exclusions take precedence over inclusions, we know it can't occur on that day.
     if (allDay()) {
         for (i = 0, end = d->mExRules.count();  i < end;  ++i) {
-            if (d->mExRules[i]->recursOn(qd, timeSpec)) {
+            if (d->mExRules[i]->recursOn(qd, timeZone)) {
                 return false;
             }
         }
@@ -360,10 +361,10 @@ bool Recurrence::recursOn(const QDate &qd, const KDateTime::Spec &timeSpec) cons
     // Check if it might recur today at all.
     bool recurs = (startDate() == qd);
     for (i = 0, end = d->mRDateTimes.count();  i < end && !recurs;  ++i) {
-        recurs = (d->mRDateTimes[i].toTimeSpec(timeSpec).date() == qd);
+        recurs = (d->mRDateTimes[i].toTimeZone(timeZone).date() == qd);
     }
     for (i = 0, end = d->mRRules.count();  i < end && !recurs;  ++i) {
-        recurs = d->mRRules[i]->recursOn(qd, timeSpec);
+        recurs = d->mRRules[i]->recursOn(qd, timeZone);
     }
     // If the event wouldn't recur at all, simply return false, don't check ex*
     if (!recurs) {
@@ -373,11 +374,11 @@ bool Recurrence::recursOn(const QDate &qd, const KDateTime::Spec &timeSpec) cons
     // Check if there are any times for this day excluded, either by exdate or exrule:
     bool exon = false;
     for (i = 0, end = d->mExDateTimes.count();  i < end && !exon;  ++i) {
-        exon = (d->mExDateTimes[i].toTimeSpec(timeSpec).date() == qd);
+        exon = (d->mExDateTimes[i].toTimeZone(timeZone).date() == qd);
     }
     if (!allDay()) {       // we have already checked all-day times above
         for (i = 0, end = d->mExRules.count();  i < end && !exon;  ++i) {
-            exon = d->mExRules[i]->recursOn(qd, timeSpec);
+            exon = d->mExRules[i]->recursOn(qd, timeZone);
         }
     }
 
@@ -389,7 +390,7 @@ bool Recurrence::recursOn(const QDate &qd, const KDateTime::Spec &timeSpec) cons
         // whole list of items for that day.
 //TODO: consider whether it would be more efficient to call
 //      Rule::recurTimesOn() instead of Rule::recursOn() from the start
-        TimeList timesForDay(recurTimesOn(qd, timeSpec));
+        TimeList timesForDay(recurTimesOn(qd, timeZone));
         return !timesForDay.isEmpty();
     }
 }
@@ -397,7 +398,7 @@ bool Recurrence::recursOn(const QDate &qd, const KDateTime::Spec &timeSpec) cons
 bool Recurrence::recursAt(const KDateTime &dt) const
 {
     // Convert to recurrence's time zone for date comparisons, and for more efficient time comparisons
-    KDateTime dtrecur = dt.toTimeSpec(d->mStartDateTime.timeSpec());
+    QDateTime dtrecur = dt.toTimeZone(d->mStartDateTime.timeZone());
 
     // if it's excluded anyway, don't bother to check if it recurs at all.
     if (d->mExDateTimes.containsSorted(dtrecur) ||
@@ -432,7 +433,7 @@ KDateTime Recurrence::endDateTime() const
     DateTimeList dts;
     dts << startDateTime();
     if (!d->mRDates.isEmpty()) {
-        dts << KDateTime(d->mRDates.last(), QTime(0, 0, 0), d->mStartDateTime.timeSpec());
+        dts << QDateTime(d->mRDates.last(), QTime(0, 0, 0), d->mStartDateTime.timeZone());
     }
     if (!d->mRDateTimes.isEmpty()) {
         dts << d->mRDateTimes.last();
@@ -460,7 +461,7 @@ QDate Recurrence::endDate() const
 
 void Recurrence::setEndDate(const QDate &date)
 {
-    KDateTime dt(date, d->mStartDateTime.time(), d->mStartDateTime.timeSpec());
+    QDateTime dt(date, d->mStartDateTime.time(), d->mStartDateTime.timeZone());
     if (allDay()) {
         dt.setTime(QTime(23, 59, 59));
     }
@@ -495,7 +496,7 @@ int Recurrence::durationTo(const KDateTime &datetime) const
 
 int Recurrence::durationTo(const QDate &date) const
 {
-    return durationTo(KDateTime(date, QTime(23, 59, 59), d->mStartDateTime.timeSpec()));
+    return durationTo(QDateTime(date, QTime(23, 59, 59), d->mStartDateTime.timeZone()));
 }
 
 void Recurrence::setDuration(int duration)
@@ -512,29 +513,29 @@ void Recurrence::setDuration(int duration)
     updated();
 }
 
-void Recurrence::shiftTimes(const KDateTime::Spec &oldSpec, const KDateTime::Spec &newSpec)
+void Recurrence::shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone)
 {
     if (d->mRecurReadOnly) {
         return;
     }
 
-    d->mStartDateTime = d->mStartDateTime.toTimeSpec(oldSpec);
-    d->mStartDateTime.setTimeSpec(newSpec);
+    d->mStartDateTime = d->mStartDateTime.toTimeZone(oldZone);
+    d->mStartDateTime.setTimeZone(newZone);
 
     int i, end;
     for (i = 0, end = d->mRDateTimes.count();  i < end;  ++i) {
-        d->mRDateTimes[i] = d->mRDateTimes[i].toTimeSpec(oldSpec);
-        d->mRDateTimes[i].setTimeSpec(newSpec);
+        d->mRDateTimes[i] = d->mRDateTimes[i].toTimeZone(oldZone);
+        d->mRDateTimes[i].setTimeZone(newZone);
     }
     for (i = 0, end = d->mExDateTimes.count();  i < end;  ++i) {
-        d->mExDateTimes[i] = d->mExDateTimes[i].toTimeSpec(oldSpec);
-        d->mExDateTimes[i].setTimeSpec(newSpec);
+        d->mExDateTimes[i] = d->mExDateTimes[i].toTimeZone(oldZone);
+        d->mExDateTimes[i].setTimeZone(newZone);
     }
     for (i = 0, end = d->mRRules.count();  i < end;  ++i) {
-        d->mRRules[i]->shiftTimes(oldSpec, newSpec);
+        d->mRRules[i]->shiftTimes(oldZone, newZone);
     }
     for (i = 0, end = d->mExRules.count();  i < end;  ++i) {
-        d->mExRules[i]->shiftTimes(oldSpec, newSpec);
+        d->mExRules[i]->shiftTimes(oldZone, newZone);
     }
 }
 
@@ -879,7 +880,7 @@ void Recurrence::addYearlyMonth(short month)
     }
 }
 
-TimeList Recurrence::recurTimesOn(const QDate &date, const KDateTime::Spec &timeSpec) const
+TimeList Recurrence::recurTimesOn(const QDate &date, const QTimeZone &timeZone) const
 {
 // qCDebug(KCALCORE_LOG) << "recurTimesOn(" << date << ")";
     int i, end;
@@ -894,20 +895,20 @@ TimeList Recurrence::recurTimesOn(const QDate &date, const KDateTime::Spec &time
     // a matching excule also excludes the whole day automatically
     if (allDay()) {
         for (i = 0, end = d->mExRules.count();  i < end;  ++i) {
-            if (d->mExRules[i]->recursOn(date, timeSpec)) {
+            if (d->mExRules[i]->recursOn(date, timeZone)) {
                 return times;
             }
         }
     }
 
-    KDateTime dt = startDateTime().toTimeSpec(timeSpec);
+    QDateTime dt = startDateTime().toTimeZone(timeZone);
     if (dt.date() == date) {
         times << dt.time();
     }
 
     bool foundDate = false;
     for (i = 0, end = d->mRDateTimes.count();  i < end;  ++i) {
-        dt = d->mRDateTimes[i].toTimeSpec(timeSpec);
+        dt = d->mExDateTimes[i].toTimeZone(timeZone);
         if (dt.date() == date) {
             times << dt.time();
             foundDate = true;
@@ -916,14 +917,14 @@ TimeList Recurrence::recurTimesOn(const QDate &date, const KDateTime::Spec &time
         }
     }
     for (i = 0, end = d->mRRules.count();  i < end;  ++i) {
-        times += d->mRRules[i]->recurTimesOn(date, timeSpec);
+        times += d->mRRules[i]->recurTimesOn(date, timeZone);
     }
     times.sortUnique();
 
     foundDate = false;
     TimeList extimes;
     for (i = 0, end = d->mExDateTimes.count();  i < end;  ++i) {
-        dt = d->mExDateTimes[i].toTimeSpec(timeSpec);
+        dt = d->mExDateTimes[i].toTimeZone(timeZone);
         if (dt.date() == date) {
             extimes << dt.time();
             foundDate = true;
@@ -933,7 +934,7 @@ TimeList Recurrence::recurTimesOn(const QDate &date, const KDateTime::Spec &time
     }
     if (!allDay()) {       // we have already checked all-day times above
         for (i = 0, end = d->mExRules.count();  i < end;  ++i) {
-            extimes += d->mExRules[i]->recurTimesOn(date, timeSpec);
+            extimes += d->mExRules[i]->recurTimesOn(date, timeZone);
         }
     }
     extimes.sortUnique();

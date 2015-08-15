@@ -169,7 +169,7 @@ KDateTime Event::dtEnd() const
 
 QDate Event::dateEnd() const
 {
-    KDateTime end = dtEnd().toTimeSpec(dtStart());
+    QDateTime end = dtEnd().toTimeZone(dtStart().timeZone());
     if (allDay()) {
         return end.date();
     } else {
@@ -182,22 +182,22 @@ bool Event::hasEndDate() const
     return d->mDtEnd.isValid();
 }
 
-bool Event::isMultiDay(const KDateTime::Spec &spec) const
+bool Event::isMultiDay(const QTimeZone &timeZone) const
 {
-    // First off, if spec's not valid, we can check for cache
-    if (!spec.isValid() && d->mMultiDayValid) {
+    // First off, if the time zone is not valid, we can check for cache
+    if (!timeZone.isValid() && d->mMultiDayValid) {
         return d->mMultiDay;
     }
 
     // Not in cache -> do it the hard way
     KDateTime start, end;
 
-    if (!spec.isValid()) {
+    if (!timeZone.isValid()) {
         start = dtStart();
         end = dtEnd();
     } else {
-        start = dtStart().toTimeSpec(spec);
-        end = dtEnd().toTimeSpec(spec);
+        start = dtStart().toTimeZone(timeZone);
+        end = dtEnd().toTimeZone(timeZone);
     }
 
     bool multi = (start < end && start.date() != end.date());
@@ -210,19 +210,18 @@ bool Event::isMultiDay(const KDateTime::Spec &spec) const
     }
 
     // Update the cache
-    // Also update Cache if spec is invalid
+    // Also update Cache if time zone is invalid
     d->mMultiDayValid = true;
     d->mMultiDay = multi;
     return multi;
 }
 
-void Event::shiftTimes(const KDateTime::Spec &oldSpec,
-                       const KDateTime::Spec &newSpec)
+void Event::shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone)
 {
-    Incidence::shiftTimes(oldSpec, newSpec);
+    Incidence::shiftTimes(oldZone, newZone);
     if (d->mDtEnd.isValid()) {
-        d->mDtEnd = d->mDtEnd.toTimeSpec(oldSpec);
-        d->mDtEnd.setTimeSpec(newSpec);
+        d->mDtEnd = d->mDtEnd.toTimeZone(oldZone);
+        d->mDtEnd.setTimeZone(newZone);
     }
 }
 
