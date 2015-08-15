@@ -646,7 +646,7 @@ Event::List Calendar::events(const QDate &date,
     return el;
 }
 
-Event::List Calendar::events(const KDateTime &dt) const
+Event::List Calendar::events(const QDateTime &dt) const
 {
     Event::List el = rawEventsForDate(dt);
     d->mFilter->apply(&el);
@@ -697,7 +697,7 @@ bool Calendar::deleteIncidence(const Incidence::Ptr &incidence)
 }
 
 Incidence::Ptr Calendar::createException(const Incidence::Ptr &incidence,
-        const KDateTime &recurrenceId,
+        const QDateTime &recurrenceId,
         bool thisAndFuture)
 {
     Q_ASSERT(recurrenceId.isValid());
@@ -716,7 +716,7 @@ Incidence::Ptr Calendar::createException(const Incidence::Ptr &incidence,
     newInc->setDtStart(recurrenceId);
 
     // Calculate and set the new end of the incidence
-    KDateTime end = incidence->dateTime(IncidenceBase::RoleEnd);
+    QDateTime end = incidence->dateTime(IncidenceBase::RoleEnd);
 
     if (end.isValid()) {
         if (incidence->allDay()) {
@@ -787,7 +787,7 @@ Incidence::Ptr Calendar::dissociateOccurrence(const Incidence::Ptr &incidence,
             haveOffset = true;
         }
         if (td->hasStartDate()) {
-            KDateTime start(td->dtStart());
+            QDateTime start(td->dtStart());
             if (!haveOffset) {
                 daysTo = start.toTimeZone(timeZone).date().daysTo(date);
             }
@@ -809,7 +809,7 @@ Incidence::Ptr Calendar::dissociateOccurrence(const Incidence::Ptr &incidence,
 }
 
 Incidence::Ptr Calendar::incidence(const QString &uid,
-                                   const KDateTime &recurrenceId) const
+                                   const QDateTime &recurrenceId) const
 {
     Incidence::Ptr i = event(uid, recurrenceId);
     if (i) {
@@ -825,7 +825,7 @@ Incidence::Ptr Calendar::incidence(const QString &uid,
     return i;
 }
 
-Incidence::Ptr Calendar::deleted(const QString &uid, const KDateTime &recurrenceId) const
+Incidence::Ptr Calendar::deleted(const QString &uid, const QDateTime &recurrenceId) const
 {
     Incidence::Ptr i = deletedEvent(uid, recurrenceId);
     if (i) {
@@ -1244,7 +1244,7 @@ bool Calendar::reload()
     return true;
 }
 
-void Calendar::incidenceUpdated(const QString &uid, const KDateTime &recurrenceId)
+void Calendar::incidenceUpdated(const QString &uid, const QDateTime &recurrenceId)
 {
 
     Incidence::Ptr inc = incidence(uid, recurrenceId);
@@ -1385,14 +1385,14 @@ void Calendar::setObserversEnabled(bool enabled)
 }
 
 void Calendar::appendAlarms(Alarm::List &alarms, const Incidence::Ptr &incidence,
-                            const KDateTime &from, const KDateTime &to) const
+                            const QDateTime &from, const QDateTime &to) const
 {
-    KDateTime preTime = from.addSecs(-1);
+    QDateTime preTime = from.addSecs(-1);
 
     Alarm::List alarmlist = incidence->alarms();
     for (int i = 0, iend = alarmlist.count();  i < iend;  ++i) {
         if (alarmlist[i]->enabled()) {
-            KDateTime dt = alarmlist[i]->nextRepetition(preTime);
+            QDateTime dt = alarmlist[i]->nextRepetition(preTime);
             if (dt.isValid() && dt <= to) {
                 qCDebug(KCALCORE_LOG) << incidence->summary() << "':" << dt.toString();
                 alarms.append(alarmlist[i]);
@@ -1403,10 +1403,10 @@ void Calendar::appendAlarms(Alarm::List &alarms, const Incidence::Ptr &incidence
 
 void Calendar::appendRecurringAlarms(Alarm::List &alarms,
                                      const Incidence::Ptr &incidence,
-                                     const KDateTime &from,
-                                     const KDateTime &to) const
+                                     const QDateTime &from,
+                                     const QDateTime &to) const
 {
-    KDateTime dt;
+    QDateTime dt;
     bool endOffsetValid = false;
     Duration endOffset(0);
     Duration period(from, to);
@@ -1438,14 +1438,14 @@ void Calendar::appendRecurringAlarms(Alarm::List &alarms,
                 }
 
                 // Find the incidence's earliest alarm
-                KDateTime alarmStart =
+                QDateTime alarmStart =
                     offset.end(a->hasEndOffset() ? incidence->dateTime(Incidence::RoleAlarmEndOffset) :
                                incidence->dtStart());
-//        KDateTime alarmStart = incidence->dtStart().addSecs( offset );
+//        QDateTime alarmStart = incidence->dtStart().addSecs( offset );
                 if (alarmStart > to) {
                     continue;
                 }
-                KDateTime baseStart = incidence->dtStart();
+                QDateTime baseStart = incidence->dtStart();
                 if (from > alarmStart) {
                     alarmStart = from;   // don't look earlier than the earliest alarm
                     baseStart = (-offset).end((-endOffset).end(alarmStart));
@@ -1465,7 +1465,7 @@ void Calendar::appendRecurringAlarms(Alarm::List &alarms,
                     // recurrences fall within the time period.
                     bool found = false;
                     Duration alarmDuration = a->duration();
-                    for (KDateTime base = baseStart;
+                    for (QDateTime base = baseStart;
                             (dt = incidence->recurrence()->getPreviousDateTime(base)).isValid();
                             base = dt) {
                         if (a->duration().end(dt) < base) {

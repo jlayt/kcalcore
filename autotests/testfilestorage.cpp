@@ -47,8 +47,8 @@ void FileStorageTest::testSave()
 
     Event::Ptr event1 = Event::Ptr(new Event());
     event1->setUid("1");
-    event1->setDtStart(KDateTime(dt));
-    event1->setDtEnd(KDateTime(dt).addDays(1));
+    event1->setDtStart(QDateTime(dt));
+    event1->setDtEnd(QDateTime(dt).addDays(1));
     event1->setSummary("Event1 Summary");
     event1->setDescription("This is a description of the first event");
     event1->setLocation("the place");
@@ -56,8 +56,8 @@ void FileStorageTest::testSave()
 
     Event::Ptr event2 = Event::Ptr(new Event());
     event2->setUid("2");
-    event2->setDtStart(KDateTime(dt).addDays(1));
-    event2->setDtEnd(KDateTime(dt).addDays(2));
+    event2->setDtStart(QDateTime(dt).addDays(1));
+    event2->setDtEnd(QDateTime(dt).addDays(2));
     event2->setSummary("Event2 Summary");
     event2->setDescription("This is a description of the second event");
     event2->setLocation("the other place");
@@ -79,8 +79,8 @@ void FileStorageTest::testSaveLoadSave()
 
     Event::Ptr event1 = Event::Ptr(new Event());
     event1->setUid("1");
-    event1->setDtStart(KDateTime(dt));
-    event1->setDtEnd(KDateTime(dt).addDays(1));
+    event1->setDtStart(QDateTime(dt));
+    event1->setDtEnd(QDateTime(dt).addDays(1));
     event1->setSummary("Event1 Summary");
     event1->setDescription("This is a description of the first event");
     event1->setLocation("the place");
@@ -88,8 +88,8 @@ void FileStorageTest::testSaveLoadSave()
 
     Event::Ptr event2 = Event::Ptr(new Event());
     event2->setUid("2");
-    event2->setDtStart(KDateTime(dt).addDays(1));
-    event2->setDtEnd(KDateTime(dt).addDays(2));
+    event2->setDtStart(QDateTime(dt).addDays(1));
+    event2->setDtEnd(QDateTime(dt).addDays(2));
     event2->setSummary("Event2 Summary");
     event2->setDescription("This is a description of the second event");
     event2->setLocation("the other place");
@@ -118,8 +118,8 @@ void FileStorageTest::testSpecialChars()
 
     Event::Ptr event = Event::Ptr(new Event());
     event->setUid(uid);
-    event->setDtStart(KDateTime(currentDate));
-    event->setDtEnd(KDateTime(currentDate.addDays(1)));
+    event->setDtStart(QDateTime(currentDate));
+    event->setDtEnd(QDateTime(currentDate.addDays(1)));
 
     const QChar latin1_umlaut[] = { 0xFC, '\0' };
 

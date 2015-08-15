@@ -26,7 +26,7 @@ void TestRecurrenceException::testCreateTodoException()
 {
     const QDateTime dtstart(QDate(2013, 03, 10), QTime(10, 0, 0), QTimeZone::utc());
     const QDateTime dtdue(QDate(2013, 03, 10), QTime(11, 0, 0), QTimeZone::utc());
-    const KDateTime recurrenceId(KDateTime(dtstart).addDays(1));
+    const QDateTime recurrenceId(QDateTime(dtstart).addDays(1));
 
     KCalCore::Todo::Ptr todo(new KCalCore::Todo());
     todo->setUid("todo");
@@ -37,8 +37,8 @@ void TestRecurrenceException::testCreateTodoException()
 
     const KCalCore::Todo::Ptr exception = KCalCore::MemoryCalendar::createException(todo, recurrenceId, false).staticCast<KCalCore::Todo>();
     QCOMPARE(exception->dtStart(), recurrenceId);
-    QCOMPARE(exception->dtDue(), KDateTime(dtdue).addDays(1));
+    QCOMPARE(exception->dtDue(), QDateTime(dtdue).addDays(1));
     //FIXME should be done on clearing the recurrence, but we can't due to BC. Probably not that important as long as dtRecurrence is ignored if the todo is not recurring
-    //QCOMPARE(exception->dtRecurrence(), KDateTime());
+    //QCOMPARE(exception->dtRecurrence(), QDateTime());
     //TODO dtCompleted
 }

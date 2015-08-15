@@ -154,7 +154,7 @@ public:
 
     /** Return the start date/time of the recurrence (Time for all-day recurrences will be 0:00).
      @return the current start/time of the recurrence. */
-    KDateTime startDateTime() const;
+    QDateTime startDateTime() const;
     /** Return the start date/time of the recurrence */
     QDate startDate() const;
     /** Set start of recurrence.
@@ -162,7 +162,7 @@ public:
        start is set to a date and time, and the recurrence is set to non-all-day.
        @param start the new start date or date/time of the recurrence.
     */
-    void setStartDateTime(const KDateTime &start);
+    void setStartDateTime(const QDateTime &start);
 
     /** Set whether the recurrence has no time, just a date.
      * All-day means -- according to rfc2445 -- that the event has no time
@@ -211,7 +211,7 @@ public:
 
       @param dt is the date/time to check.
     */
-    bool recursAt(const KDateTime &dt) const;
+    bool recursAt(const QDateTime &dt) const;
 
     /**
       Removes all recurrence rules. Recurrence dates and exceptions are
@@ -237,22 +237,22 @@ public:
      *
      * There is a (large) maximum limit to the number of times returned. If due to
      * this limit the list is incomplete, this is indicated by the last entry being
-     * set to an invalid KDateTime value. If you need further values, call the
+     * set to an invalid QDateTime value. If you need further values, call the
      * method again with a start time set to just after the last valid time returned.
      *
      * @param start inclusive start of interval
      * @param end inclusive end of interval
      * @return list of date/time values
      */
-    DateTimeList timesInInterval(const KDateTime &start, const KDateTime &end) const;
+    DateTimeList timesInInterval(const QDateTime &start, const QDateTime &end) const;
 
     /** Returns the date and time of the next recurrence, after the specified date/time.
      * If the recurrence has no time, the next date after the specified date is returned.
      * @param preDateTime the date/time after which to find the recurrence.
      * @return date/time of next recurrence (strictly later than the given
-     *         KDateTime), or invalid date if none.
+     *         QDateTime), or invalid date if none.
      */
-    KDateTime getNextDateTime(const KDateTime &preDateTime) const;
+    QDateTime getNextDateTime(const QDateTime &preDateTime) const;
 
     /** Returns the date and time of the last previous recurrence, before the specified date/time.
      * If a time later than 00:00:00 is specified and the recurrence has no time, 00:00:00 on
@@ -260,9 +260,9 @@ public:
      *
      * @param afterDateTime the date/time before which to find the recurrence.
      * @return date/time of previous recurrence (strictly earlier than the given
-     *         KDateTime), or invalid date if none.
+     *         QDateTime), or invalid date if none.
      */
-    KDateTime getPreviousDateTime(const KDateTime &afterDateTime) const;
+    QDateTime getPreviousDateTime(const QDateTime &afterDateTime) const;
 
     /** Returns frequency of recurrence, in terms of the recurrence time period type. */
     int frequency() const;
@@ -283,7 +283,7 @@ public:
     /** Returns the number of recurrences up to and including the date/time specified.
      *  @warning This function can be very time consuming - use it sparingly!
      */
-    int durationTo(const KDateTime &dt) const;
+    int durationTo(const QDateTime &dt) const;
 
     /** Returns the number of recurrences up to and including the date specified.
      *  @warning This function can be very time consuming - use it sparingly!
@@ -293,7 +293,7 @@ public:
     /** Returns the date/time of the last recurrence.
      * An invalid date is returned if the recurrence has no end.
      */
-    KDateTime endDateTime() const;
+    QDateTime endDateTime() const;
 
     /** Returns the date of the last recurrence.
      * An invalid date is returned if the recurrence has no end.
@@ -307,7 +307,7 @@ public:
 
     /** Sets the date and time of the last recurrence.
      * @param endDateTime the ending date/time after which to stop recurring. */
-    void setEndDateTime(const KDateTime &endDateTime);
+    void setEndDateTime(const QDateTime &endDateTime);
 
     /**
       Shift the times of the recurrence so that they appear at the same clock
@@ -608,7 +608,7 @@ public:
     DateList rDates() const;
     void setRDateTimes(const DateTimeList &rdates);
     void setRDates(const DateList &rdates);
-    void addRDateTime(const KDateTime &rdate);
+    void addRDateTime(const QDateTime &rdate);
     void addRDate(const QDate &rdate);
 
     // ExDATE
@@ -616,7 +616,7 @@ public:
     DateList exDates() const;
     void setExDateTimes(const DateTimeList &exdates);
     void setExDates(const DateList &exdates);
-    void addExDateTime(const KDateTime &exdate);
+    void addExDateTime(const QDateTime &exdate);
     void addExDate(const QDate &exdate);
 
     RecurrenceRule *defaultRRule(bool create = false) const;

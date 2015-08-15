@@ -152,7 +152,7 @@ bool Compat::useTimeZoneShift() const
     return true;
 }
 
-void Compat::setCreatedToDtStamp(const Incidence::Ptr &incidence, const KDateTime &dtstamp)
+void Compat::setCreatedToDtStamp(const Incidence::Ptr &incidence, const QDateTime &dtstamp)
 {
     Q_UNUSED(incidence);
     Q_UNUSED(dtstamp);
@@ -207,7 +207,7 @@ bool CompatDecorator::useTimeZoneShift() const
 }
 
 void CompatDecorator::setCreatedToDtStamp(const Incidence::Ptr &incidence,
-        const KDateTime &dtstamp)
+        const QDateTime &dtstamp)
 {
     d->compat->setCreatedToDtStamp(incidence, dtstamp);
 }
@@ -224,7 +224,7 @@ void CompatPre35::fixRecurrence(const Incidence::Ptr &incidence)
 {
     Recurrence *recurrence = incidence->recurrence();
     if (recurrence) {
-        KDateTime start(incidence->dtStart());
+        QDateTime start(incidence->dtStart());
         // kde < 3.5 only had one rrule, so no need to loop over all RRULEs.
         RecurrenceRule *r = recurrence->defaultRRule();
         if (r && !r->dateMatchesRules(start)) {
@@ -402,7 +402,7 @@ CompatPre410::~CompatPre410()
 {
 }
 
-void CompatPre410::setCreatedToDtStamp(const Incidence::Ptr &incidence, const KDateTime &dtstamp)
+void CompatPre410::setCreatedToDtStamp(const Incidence::Ptr &incidence, const QDateTime &dtstamp)
 {
     if (dtstamp.isValid()) {
         incidence->setCreated(dtstamp);

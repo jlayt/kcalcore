@@ -324,18 +324,18 @@ VObject *VCalFormat::eventToVTodo(const Todo::Ptr &anEvent)
 
     // due date
     if (anEvent->hasDueDate()) {
-        tmpStr = kDateTimeToISO(anEvent->dtDue(), !anEvent->allDay());
+        tmpStr = qDateTimeToISO(anEvent->dtDue(), !anEvent->allDay());
         addPropValue(vtodo, VCDueProp, tmpStr.toUtf8());
     }
 
     // start date
     if (anEvent->hasStartDate()) {
-        tmpStr = kDateTimeToISO(anEvent->dtStart(), !anEvent->allDay());
+        tmpStr = qDateTimeToISO(anEvent->dtStart(), !anEvent->allDay());
         addPropValue(vtodo, VCDTstartProp, tmpStr.toUtf8());
     }
 
     // creation date
-    tmpStr = kDateTimeToISO(anEvent->created());
+    tmpStr = qDateTimeToISO(anEvent->created());
     addPropValue(vtodo, VCDCreatedProp, tmpStr.toUtf8());
 
     // unique id
@@ -347,7 +347,7 @@ VObject *VCalFormat::eventToVTodo(const Todo::Ptr &anEvent)
     addPropValue(vtodo, VCSequenceProp, tmpStr.toUtf8());
 
     // last modification date
-    tmpStr = kDateTimeToISO(anEvent->lastModified());
+    tmpStr = qDateTimeToISO(anEvent->lastModified());
     addPropValue(vtodo, VCLastModifiedProp, tmpStr.toUtf8());
 
     // organizer stuff
@@ -463,7 +463,7 @@ VObject *VCalFormat::eventToVTodo(const Todo::Ptr &anEvent)
         } else if (recur->duration() == -1) {
             tmpStr += QLatin1String("#0"); // defined as repeat forever
         } else {
-            tmpStr += kDateTimeToISO(recur->endDateTime(), false);
+            tmpStr += qDateTimeToISO(recur->endDateTime(), false);
         }
         // Only write out the rrule if we have a valid recurrence (i.e. a known
         // type in thee switch above)
@@ -492,7 +492,7 @@ VObject *VCalFormat::eventToVTodo(const Todo::Ptr &anEvent)
     tmpStr2.clear();
 
     for (idt = dateTimeList.constBegin(); idt != dateTimeList.constEnd(); ++idt) {
-        tmpStr = kDateTimeToISO(*idt) + QLatin1Char(';');
+        tmpStr = qDateTimeToISO(*idt) + QLatin1Char(';');
         tmpStr2 += tmpStr;
     }
     if (!tmpStr2.isEmpty()) {
@@ -548,7 +548,7 @@ VObject *VCalFormat::eventToVTodo(const Todo::Ptr &anEvent)
 
     // completion date
     if (anEvent->hasCompletedDate()) {
-        tmpStr = kDateTimeToISO(anEvent->completed());
+        tmpStr = qDateTimeToISO(anEvent->completed());
         addPropValue(vtodo, VCCompletedProp, tmpStr.toUtf8());
     }
 
@@ -609,7 +609,7 @@ VObject *VCalFormat::eventToVTodo(const Todo::Ptr &anEvent)
             VObject *a;
             if (alarm->type() == Alarm::Display) {
                 a = addProp(vtodo, VCDAlarmProp);
-                tmpStr = kDateTimeToISO(alarm->time());
+                tmpStr = qDateTimeToISO(alarm->time());
                 addPropValue(a, VCRunTimeProp, tmpStr.toUtf8());
                 addPropValue(a, VCRepeatCountProp, "1");
                 if (alarm->text().isNull()) {
@@ -619,13 +619,13 @@ VObject *VCalFormat::eventToVTodo(const Todo::Ptr &anEvent)
                 }
             } else if (alarm->type() == Alarm::Audio) {
                 a = addProp(vtodo, VCAAlarmProp);
-                tmpStr = kDateTimeToISO(alarm->time());
+                tmpStr = qDateTimeToISO(alarm->time());
                 addPropValue(a, VCRunTimeProp, tmpStr.toUtf8());
                 addPropValue(a, VCRepeatCountProp, "1");
                 addPropValue(a, VCAudioContentProp, QFile::encodeName(alarm->audioFile()));
             } else if (alarm->type() == Alarm::Procedure) {
                 a = addProp(vtodo, VCPAlarmProp);
-                tmpStr = kDateTimeToISO(alarm->time());
+                tmpStr = qDateTimeToISO(alarm->time());
                 addPropValue(a, VCRunTimeProp, tmpStr.toUtf8());
                 addPropValue(a, VCRepeatCountProp, "1");
                 addPropValue(a, VCProcedureNameProp, QFile::encodeName(alarm->programFile()));
@@ -652,18 +652,18 @@ VObject *VCalFormat::eventToVEvent(const Event::Ptr &anEvent)
     vevent = newVObject(VCEventProp);
 
     // start and end time
-    tmpStr = kDateTimeToISO(anEvent->dtStart(), !anEvent->allDay());
+    tmpStr = qDateTimeToISO(anEvent->dtStart(), !anEvent->allDay());
     addPropValue(vevent, VCDTstartProp, tmpStr.toUtf8());
 
     // events that have time associated but take up no time should
     // not have both DTSTART and DTEND.
     if (anEvent->dtStart() != anEvent->dtEnd()) {
-        tmpStr = kDateTimeToISO(anEvent->dtEnd(), !anEvent->allDay());
+        tmpStr = qDateTimeToISO(anEvent->dtEnd(), !anEvent->allDay());
         addPropValue(vevent, VCDTendProp, tmpStr.toUtf8());
     }
 
     // creation date
-    tmpStr = kDateTimeToISO(anEvent->created());
+    tmpStr = qDateTimeToISO(anEvent->created());
     addPropValue(vevent, VCDCreatedProp, tmpStr.toUtf8());
 
     // unique id
@@ -675,7 +675,7 @@ VObject *VCalFormat::eventToVEvent(const Event::Ptr &anEvent)
     addPropValue(vevent, VCSequenceProp, tmpStr.toUtf8());
 
     // last modification date
-    tmpStr = kDateTimeToISO(anEvent->lastModified());
+    tmpStr = qDateTimeToISO(anEvent->lastModified());
     addPropValue(vevent, VCLastModifiedProp, tmpStr.toUtf8());
 
     // attendee and organizer stuff
@@ -790,7 +790,7 @@ VObject *VCalFormat::eventToVEvent(const Event::Ptr &anEvent)
         } else if (recur->duration() == -1) {
             tmpStr += QLatin1String("#0"); // defined as repeat forever
         } else {
-            tmpStr += kDateTimeToISO(recur->endDateTime(), false);
+            tmpStr += qDateTimeToISO(recur->endDateTime(), false);
         }
         // Only write out the rrule if we have a valid recurrence (i.e. a known
         // type in thee switch above)
@@ -819,7 +819,7 @@ VObject *VCalFormat::eventToVEvent(const Event::Ptr &anEvent)
     tmpStr2.clear();
 
     for (idt = dateTimeList.constBegin(); idt != dateTimeList.constEnd(); ++idt) {
-        tmpStr = kDateTimeToISO(*idt) + QLatin1Char(';');
+        tmpStr = qDateTimeToISO(*idt) + QLatin1Char(';');
         tmpStr2 += tmpStr;
     }
     if (!tmpStr2.isEmpty()) {
@@ -935,7 +935,7 @@ VObject *VCalFormat::eventToVEvent(const Event::Ptr &anEvent)
             VObject *a;
             if (alarm->type() == Alarm::Display) {
                 a = addProp(vevent, VCDAlarmProp);
-                tmpStr = kDateTimeToISO(alarm->time());
+                tmpStr = qDateTimeToISO(alarm->time());
                 addPropValue(a, VCRunTimeProp, tmpStr.toUtf8());
                 addPropValue(a, VCRepeatCountProp, "1");
                 if (alarm->text().isNull()) {
@@ -945,14 +945,14 @@ VObject *VCalFormat::eventToVEvent(const Event::Ptr &anEvent)
                 }
             } else if (alarm->type() == Alarm::Audio) {
                 a = addProp(vevent, VCAAlarmProp);
-                tmpStr = kDateTimeToISO(alarm->time());
+                tmpStr = qDateTimeToISO(alarm->time());
                 addPropValue(a, VCRunTimeProp, tmpStr.toUtf8());
                 addPropValue(a, VCRepeatCountProp, "1");
                 addPropValue(a, VCAudioContentProp, QFile::encodeName(alarm->audioFile()));
             }
             if (alarm->type() == Alarm::Procedure) {
                 a = addProp(vevent, VCPAlarmProp);
-                tmpStr = kDateTimeToISO(alarm->time());
+                tmpStr = qDateTimeToISO(alarm->time());
                 addPropValue(a, VCRunTimeProp, tmpStr.toUtf8());
                 addPropValue(a, VCRepeatCountProp, "1");
                 addPropValue(a, VCProcedureNameProp, QFile::encodeName(alarm->programFile()));
@@ -994,7 +994,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
 
     // creation date
     if ((vo = isAPropertyOf(vtodo, VCDCreatedProp)) != 0) {
-        anEvent->setCreated(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
+        anEvent->setCreated(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
         deleteStr(s);
     }
 
@@ -1009,7 +1009,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
 
     // last modification date
     if ((vo = isAPropertyOf(vtodo, VCLastModifiedProp)) != 0) {
-        anEvent->setLastModified(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
+        anEvent->setLastModified(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
         deleteStr(s);
     } else {
         anEvent->setLastModified(QDateTime::currentDateTimeUtc());
@@ -1104,7 +1104,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
 
     // completion date
     if ((vo = isAPropertyOf(vtodo, VCCompletedProp)) != 0) {
-        anEvent->setCompleted(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
+        anEvent->setCompleted(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
         deleteStr(s);
     }
 
@@ -1121,7 +1121,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
 
     // due date
     if ((vo = isAPropertyOf(vtodo, VCDueProp)) != 0) {
-        anEvent->setDtDue(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
+        anEvent->setDtDue(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
         deleteStr(s);
         if (anEvent->dtDue().time().hour() == 0 &&
                 anEvent->dtDue().time().minute() == 0 &&
@@ -1129,12 +1129,12 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
             anEvent->setAllDay(true);
         }
     } else {
-        anEvent->setDtDue(KDateTime());
+        anEvent->setDtDue(QDateTime());
     }
 
     // start time
     if ((vo = isAPropertyOf(vtodo, VCDTstartProp)) != 0) {
-        anEvent->setDtStart(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
+        anEvent->setDtStart(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
         deleteStr(s);
         if (anEvent->dtStart().time().hour() == 0 &&
                 anEvent->dtStart().time().minute() == 0 &&
@@ -1142,7 +1142,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
             anEvent->setAllDay(true);
         }
     } else {
-        anEvent->setDtStart(KDateTime());
+        anEvent->setDtStart(QDateTime());
     }
 
     // repeat stuff
@@ -1317,7 +1317,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
                     anEvent->recurrence()->setDuration(rDuration);
                 }
             } else if (tmpStr.indexOf(QLatin1Char('T'), index) != -1) {
-                KDateTime rEndDate = ISOToKDateTime(tmpStr.mid(index, tmpStr.length() - index));
+                QDateTime rEndDate = ISOToQDateTime(tmpStr.mid(index, tmpStr.length() - index));
                 anEvent->recurrence()->setEndDateTime(rEndDate);
             }
         } else {
@@ -1331,7 +1331,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
         QStringList exDates = QString::fromUtf8(s).split(QLatin1Char(','));
         QStringList::ConstIterator it;
         for (it = exDates.constBegin(); it != exDates.constEnd(); ++it) {
-            KDateTime exDate = ISOToKDateTime(*it);
+            QDateTime exDate = ISOToQDateTime(*it);
             if (exDate.time().hour() == 0 &&
                     exDate.time().minute() == 0 &&
                     exDate.time().second() == 0) {
@@ -1354,7 +1354,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
         if (a || b) {
             alarm = anEvent->newAlarm();
             if (a) {
-                alarm->setTime(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
+                alarm->setTime(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
                 deleteStr(s);
             }
             alarm->setEnabled(true);
@@ -1378,7 +1378,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
         if (a || b) {
             alarm = anEvent->newAlarm();
             if (a) {
-                alarm->setTime(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
+                alarm->setTime(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
                 deleteStr(s);
             }
             alarm->setEnabled(true);
@@ -1402,7 +1402,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
         if (a || b) {
             alarm = anEvent->newAlarm();
             if (a) {
-                alarm->setTime(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
+                alarm->setTime(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
                 deleteStr(s);
             }
             alarm->setEnabled(true);
@@ -1473,7 +1473,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
 
     // creation date
     if ((vo = isAPropertyOf(vevent, VCDCreatedProp)) != 0) {
-        anEvent->setCreated(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
+        anEvent->setCreated(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
         deleteStr(s);
     }
 
@@ -1499,7 +1499,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
 
     // last modification date
     if ((vo = isAPropertyOf(vevent, VCLastModifiedProp)) != 0) {
-        anEvent->setLastModified(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
+        anEvent->setLastModified(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
         deleteStr(s);
     } else {
         anEvent->setLastModified(QDateTime::currentDateTimeUtc());
@@ -1570,7 +1570,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
 
     // start time
     if ((vo = isAPropertyOf(vevent, VCDTstartProp)) != 0) {
-        anEvent->setDtStart(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
+        anEvent->setDtStart(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
         deleteStr(s);
 
         if (anEvent->dtStart().time().hour() == 0 &&
@@ -1582,7 +1582,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
 
     // stop time
     if ((vo = isAPropertyOf(vevent, VCDTendProp)) != 0) {
-        anEvent->setDtEnd(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
+        anEvent->setDtEnd(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(vo)))));
         deleteStr(s);
 
         if (anEvent->dtEnd().time().hour() == 0 &&
@@ -1775,7 +1775,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
                     anEvent->recurrence()->setDuration(rDuration);
                 }
             } else if (tmpStr.indexOf(QLatin1Char('T'), index) != -1) {
-                KDateTime rEndDate = ISOToKDateTime(tmpStr.mid(index, tmpStr.length() - index));
+                QDateTime rEndDate = ISOToQDateTime(tmpStr.mid(index, tmpStr.length() - index));
                 anEvent->recurrence()->setEndDateTime(rEndDate);
             }
 // anEvent->recurrence()->dump();
@@ -1791,7 +1791,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
         QStringList exDates = QString::fromUtf8(s).split(QLatin1Char(','));
         QStringList::ConstIterator it;
         for (it = exDates.constBegin(); it != exDates.constEnd(); ++it) {
-            KDateTime exDate = ISOToKDateTime(*it);
+            QDateTime exDate = ISOToQDateTime(*it);
             if (exDate.time().hour() == 0 &&
                     exDate.time().minute() == 0 &&
                     exDate.time().second() == 0) {
@@ -1902,7 +1902,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
         if (a || b) {
             alarm = anEvent->newAlarm();
             if (a) {
-                alarm->setTime(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
+                alarm->setTime(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
                 deleteStr(s);
             }
             alarm->setEnabled(true);
@@ -1927,7 +1927,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
         if (a || b) {
             alarm = anEvent->newAlarm();
             if (a) {
-                alarm->setTime(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
+                alarm->setTime(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
                 deleteStr(s);
             }
             alarm->setEnabled(true);
@@ -1952,7 +1952,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
         if (a || b) {
             alarm = anEvent->newAlarm();
             if (a) {
-                alarm->setTime(ISOToKDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
+                alarm->setTime(ISOToQDateTime(QString::fromUtf8(s = fakeCString(vObjectUStringZValue(a)))));
                 deleteStr(s);
             }
             alarm->setEnabled(true);
@@ -2054,7 +2054,7 @@ QString VCalFormat::qDateToISO(const QDate &qd)
 
 }
 
-QString VCalFormat::kDateTimeToISO(const KDateTime &dt, bool zulu)
+QString VCalFormat::qDateTimeToISO(const QDateTime &dt, bool zulu)
 {
     QString tmpStr;
 
@@ -2064,9 +2064,9 @@ QString VCalFormat::kDateTimeToISO(const KDateTime &dt, bool zulu)
 
     QDateTime tmpDT;
     if (zulu) {
-        tmpDT = dt.toUtc().dateTime();
+        tmpDT = dt.toUtc();
     } else {
-        tmpDT = dt.toTimeZone(d->mCalendar->timeZone()).dateTime();
+        tmpDT = dt.toTimeZone(d->mCalendar->timeZone());
     }
     tmpStr.sprintf("%.2d%.2d%.2dT%.2d%.2d%.2d",
                    tmpDT.date().year(), tmpDT.date().month(),
@@ -2078,7 +2078,7 @@ QString VCalFormat::kDateTimeToISO(const KDateTime &dt, bool zulu)
     return tmpStr;
 }
 
-KDateTime VCalFormat::ISOToKDateTime(const QString &dtStr)
+QDateTime VCalFormat::ISOToQDateTime(const QString &dtStr)
 {
     QDate tmpDate;
     QTime tmpTime;
@@ -2103,7 +2103,7 @@ KDateTime VCalFormat::ISOToKDateTime(const QString &dtStr)
             return QDateTime(tmpDate, tmpTime, d->mCalendar->timeZone());
         }
     } else {
-        return KDateTime();
+        return QDateTime();
     }
 }
 
@@ -2240,7 +2240,7 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
             // qCDebug(KCALCORE_LOG) << "got standard offset" << ts << utcOffset;
             // standard from tz
             // starting date for now 01011900
-            KDateTime dt = KDateTime(QDateTime(QDate(1900, 1, 1), QTime(0, 0, 0)));
+            QDateTime dt = QDateTime(QDateTime(QDate(1900, 1, 1), QTime(0, 0, 0)));
             tz = QStringLiteral("STD;%1;false;%2").arg(QString::number(utcOffset)).arg(dt.toString());
             tzList.append(tz);
 
@@ -2269,15 +2269,15 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
                         // qCDebug(KCALCORE_LOG) << "got DST offset" << argl[1] << utcOffsetDst;
                         // standard
                         QString strEndDate = argl[3];
-                        KDateTime endDate = ISOToKDateTime(strEndDate);
+                        QDateTime endDate = ISOToQDateTime(strEndDate);
                         // daylight
                         QString strStartDate = argl[2];
-                        KDateTime startDate = ISOToKDateTime(strStartDate);
+                        QDateTime startDate = ISOToQDateTime(strStartDate);
 
                         QString strRealEndDate = strEndDate;
                         QString strRealStartDate = strStartDate;
-                        KDateTime realEndDate = endDate;
-                        KDateTime realStartDate = startDate;
+                        QDateTime realEndDate = endDate;
+                        QDateTime realStartDate = startDate;
                         // if we get dates for some reason in wrong order, earlier is used for dst
                         if (endDate < startDate) {
                             strRealEndDate = strStartDate;
@@ -2358,9 +2358,9 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
                     //we go. If there is a TZ in the VCALENDAR even if the dtStart
                     //and dtend are in UTC, clients interpret it using also the TZ defined
                     //in the Calendar. I know it sounds braindead but oh well
-                    int utcOffSet = anEvent->dtStart().offsetFromUtc();
-                    QDateTime dtStart(anEvent->dtStart().dateTime().addSecs(utcOffSet).toTimeZone(d->mCalendar->timeZone()));
-                    QDateTime dtEnd(anEvent->dtEnd().dateTime().addSecs(utcOffSet).toTimeZone(d->mCalendar->timeZone()));
+                    int offsetFromUtc = anEvent->dtStart().offsetFromUtc();
+                    QDateTime dtStart(anEvent->dtStart().dateTime().addSecs(offsetFromUtc).toTimeZone(d->mCalendar->timeZone()));
+                    QDateTime dtEnd(anEvent->dtEnd().dateTime().addSecs(offsetFromUtc).toTimeZone(d->mCalendar->timeZone()));
                     anEvent->setDtStart(dtStart);
                     anEvent->setDtEnd(dtEnd);
                 }
@@ -2397,11 +2397,11 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
                     //we go. If there is a TZ in the VCALENDAR even if the dtStart
                     //and dtend are in UTC, clients interpret it usint alse the TZ defined
                     //in the Calendar. I know it sounds braindead but oh well
-                    int utcOffSet = aTodo->dtStart().offsetFromUtc();
-                    QDateTime dtStart(aTodo->dtStart().dateTime().addSecs(utcOffSet).toTimeZone(d->mCalendar->timeZone()));
+                    int offsetFromUtc = aTodo->dtStart().offsetFromUtc();
+                    QDateTime dtStart(aTodo->dtStart().dateTime().addSecs(offsetFromUtc).toTimeZone(d->mCalendar->timeZone()));
                     aTodo->setDtStart(dtStart);
                     if (aTodo->hasDueDate()) {
-                        QDateTime dtDue(aTodo->dtDue().dateTime().addSecs(utcOffSet).toTimeZone(d->mCalendar->timeZone()));
+                        QDateTime dtDue(aTodo->dtDue().dateTime().addSecs(offsetFromUtc).toTimeZone(d->mCalendar->timeZone()));
                         aTodo->setDtDue(dtDue);
                     }
                 }

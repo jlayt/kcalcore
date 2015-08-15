@@ -106,7 +106,7 @@ public:
       current occurrence will be returned. If non-recurrent, the normal due
       date will be returned.
     */
-    void setDtDue(const KDateTime &dtDue, bool first = false);
+    void setDtDue(const QDateTime &dtDue, bool first = false);
 
     /**
       Returns the todo due datetime.
@@ -115,9 +115,9 @@ public:
       occurrence will be returned. If false and recurrent, the datetime of the
       current occurrence will be returned. If non-recurrent, the normal due
       datetime will be returned.
-      @return A KDateTime containing the todo due datetime.
+      @return A QDateTime containing the todo due datetime.
     */
-    KDateTime dtDue(bool first = false) const;
+    QDateTime dtDue(bool first = false) const;
 
     /**
       Returns if the todo has a due datetime.
@@ -134,7 +134,7 @@ public:
     /**
       @copydoc IncidenceBase::dtStart()
     */
-    KDateTime dtStart() const Q_DECL_OVERRIDE;
+    QDateTime dtStart() const Q_DECL_OVERRIDE;
 
     /**
       Returns the start datetime of the todo.
@@ -144,9 +144,9 @@ public:
       will be returned.
       If false and the todo recurs, the relative start datetime will be returned,
       based on the datetime returned by dtRecurrence().
-      @return A KDateTime for the start datetime of the todo.
+      @return A QDateTime for the start datetime of the todo.
     */
-    KDateTime dtStart(bool first) const;
+    QDateTime dtStart(bool first) const;
 
     /**
       Returns if the todo is 100% completed.
@@ -188,10 +188,10 @@ public:
     /**
       Returns the to-do was completion datetime.
 
-      @return A KDateTime for the completeion datetime of the to-do.
+      @return A QDateTime for the completeion datetime of the to-do.
       @see hasCompletedDate()
     */
-    KDateTime completed() const;
+    QDateTime completed() const;
 
     /**
       Sets date and time of completion.
@@ -199,7 +199,7 @@ public:
       @param completeDate is the to-do completion date.
       @see completed(), hasCompletedDate()
     */
-    void setCompleted(const KDateTime &completeDate);
+    void setCompleted(const QDateTime &completeDate);
 
     /**
       Returns if the to-do has a completion datetime.
@@ -257,12 +257,12 @@ public:
 
       @param dt is the
     */
-    void setDtRecurrence(const KDateTime &dt);
+    void setDtRecurrence(const QDateTime &dt);
 
     /**
       Returns the due date/time of the current occurrence if recurrent.
     */
-    KDateTime dtRecurrence() const;
+    QDateTime dtRecurrence() const;
 
     /**
       Returns true if the @p date specified is one on which the to-do will
@@ -286,12 +286,12 @@ public:
     /**
       @copydoc IncidenceBase::dateTime()
     */
-    KDateTime dateTime(DateTimeRole role) const Q_DECL_OVERRIDE;
+    QDateTime dateTime(DateTimeRole role) const Q_DECL_OVERRIDE;
 
     /**
       @copydoc IncidenceBase::setDateTime()
     */
-    void setDateTime(const KDateTime &dateTime, DateTimeRole role) Q_DECL_OVERRIDE;
+    void setDateTime(const QDateTime &dateTime, DateTimeRole role) Q_DECL_OVERRIDE;
 
     /**
        @copydoc IncidenceBase::mimeType()
@@ -301,7 +301,7 @@ public:
     /**
        @copydoc Incidence::iconName()
     */
-    QLatin1String iconName(const KDateTime &recurrenceId = KDateTime()) const Q_DECL_OVERRIDE;
+    QLatin1String iconName(const QDateTime &recurrenceId = QDateTime()) const Q_DECL_OVERRIDE;
 
     /**
        @copydoc

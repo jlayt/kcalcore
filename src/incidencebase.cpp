@@ -81,8 +81,8 @@ public:
 
     void init(const Private &other);
 
-    KDateTime mLastModified;     // incidence last modified date
-    KDateTime mDtStart;          // incidence start time
+    QDateTime mLastModified;     // incidence last modified date
+    QDateTime mDtStart;          // incidence start time
     Person::Ptr mOrganizer;           // incidence person (owner)
     QString mUid;                // incidence unique id
     Duration mDuration;          // incidence duration
@@ -239,7 +239,7 @@ QString IncidenceBase::uid() const
     return d->mUid;
 }
 
-void IncidenceBase::setLastModified(const KDateTime &lm)
+void IncidenceBase::setLastModified(const QDateTime &lm)
 {
     // DON'T! updated() because we call this from
     // Calendar::updateEvent().
@@ -247,7 +247,7 @@ void IncidenceBase::setLastModified(const KDateTime &lm)
     d->mDirtyFields.insert(FieldLastModified);
 
     // Convert to UTC and remove milliseconds part.
-    KDateTime current = lm.toUtc();
+    QDateTime current = lm.toUtc();
     QTime t = current.time();
     t.setHMS(t.hour(), t.minute(), t.second(), 0);
     current.setTime(t);
@@ -255,7 +255,7 @@ void IncidenceBase::setLastModified(const KDateTime &lm)
     d->mLastModified = current;
 }
 
-KDateTime IncidenceBase::lastModified() const
+QDateTime IncidenceBase::lastModified() const
 {
     return d->mLastModified;
 }
@@ -306,7 +306,7 @@ bool IncidenceBase::isReadOnly() const
     return mReadOnly;
 }
 
-void IncidenceBase::setDtStart(const KDateTime &dtStart)
+void IncidenceBase::setDtStart(const QDateTime &dtStart)
 {
 //  if ( mReadOnly ) return;
 
@@ -320,7 +320,7 @@ void IncidenceBase::setDtStart(const KDateTime &dtStart)
     updated();
 }
 
-KDateTime IncidenceBase::dtStart() const
+QDateTime IncidenceBase::dtStart() const
 {
     return d->mDtStart;
 }
@@ -595,7 +595,7 @@ void IncidenceBase::update()
 {
     if (!d->mUpdateGroupLevel) {
         d->mUpdatedPending = true;
-        KDateTime rid = recurrenceId();
+        QDateTime rid = recurrenceId();
         foreach (IncidenceObserver *o, d->mObservers) {
             o->incidenceUpdate(uid(), rid);
         }
@@ -607,7 +607,7 @@ void IncidenceBase::updated()
     if (d->mUpdateGroupLevel) {
         d->mUpdatedPending = true;
     } else {
-        const KDateTime rid = recurrenceId();
+        const QDateTime rid = recurrenceId();
         foreach (IncidenceObserver *o, d->mObservers) {
             o->incidenceUpdated(uid(), rid);
         }
@@ -640,9 +640,9 @@ void IncidenceBase::customPropertyUpdated()
     updated();
 }
 
-KDateTime IncidenceBase::recurrenceId() const
+QDateTime IncidenceBase::recurrenceId() const
 {
-    return KDateTime();
+    return QDateTime();
 }
 
 void IncidenceBase::resetDirtyFields()

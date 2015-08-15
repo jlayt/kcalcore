@@ -32,8 +32,8 @@ void TodoTest::testValidity()
 {
     QDate dt = QDate::currentDate();
     Todo *todo = new Todo();
-    todo->setDtStart(KDateTime(dt));
-    todo->setDtDue(KDateTime(dt).addDays(1));
+    todo->setDtStart(QDateTime(dt));
+    todo->setDtDue(QDateTime(dt).addDays(1));
     todo->setSummary("To-do1 Summary");
     todo->setDescription("This is a description of the first to-do");
     todo->setLocation("the place");
@@ -48,16 +48,16 @@ void TodoTest::testCompare()
 {
     QDate dt = QDate::currentDate();
     Todo todo1;
-    todo1.setDtStart(KDateTime(dt));
-    todo1.setDtDue(KDateTime(dt).addDays(1));
+    todo1.setDtStart(QDateTime(dt));
+    todo1.setDtDue(QDateTime(dt).addDays(1));
     todo1.setSummary("To-do1 Summary");
     todo1.setDescription("This is a description of the first to-do");
     todo1.setLocation("the place");
     todo1.setCompleted(true);
 
     Todo todo2;
-    todo2.setDtStart(KDateTime(dt).addDays(1));
-    todo2.setDtDue(KDateTime(dt).addDays(2));
+    todo2.setDtStart(QDateTime(dt).addDays(1));
+    todo2.setDtDue(QDateTime(dt).addDays(2));
     todo2.setSummary("To-do2 Summary");
     todo2.setDescription("This is a description of the second to-do");
     todo2.setLocation("the other place");
@@ -73,8 +73,8 @@ void TodoTest::testClone()
 {
     QDate dt = QDate::currentDate();
     Todo todo1;
-    todo1.setDtStart(KDateTime(dt));
-    todo1.setDtDue(KDateTime(dt).addDays(1));
+    todo1.setDtStart(QDateTime(dt));
+    todo1.setDtDue(QDateTime(dt).addDays(1));
     todo1.setSummary("Todo1 Summary");
     todo1.setDescription("This is a description of the first todo");
     todo1.setLocation("the place");
@@ -92,7 +92,7 @@ void TodoTest::testCopyIncidence()
 {
     QDate dt = QDate::currentDate();
     Event event;
-    event.setDtStart(KDateTime(dt));
+    event.setDtStart(QDateTime(dt));
     event.setSummary(QLatin1String("Event1 Summary"));
     event.setDescription(QLatin1String("This is a description of the first event"));
     event.setLocation(QLatin1String("the place"));
@@ -109,8 +109,8 @@ void TodoTest::testAssign()
 {
     QDate dt = QDate::currentDate();
     Todo todo1;
-    todo1.setDtStart(KDateTime(dt));
-    todo1.setDtDue(KDateTime(dt).addDays(1));
+    todo1.setDtStart(QDateTime(dt));
+    todo1.setDtDue(QDateTime(dt).addDays(1));
     todo1.setSummary("Todo1 Summary");
     todo1.setDescription("This is a description of the first todo");
     todo1.setLocation("the place");
@@ -126,10 +126,10 @@ void TodoTest::testSetCompleted()
     todo1.setSummary("Todo Summary");
     todo2.setSummary("Todo Summary");
     todo3.setSummary("Todo Summary");
-    KDateTime today = QDateTime::currentDateTimeUtc();
+    QDateTime today = QDateTime::currentDateTimeUtc();
 
     // due yesterday
-    KDateTime originalDueDate = today.addDays(-1);
+    QDateTime originalDueDate = today.addDays(-1);
 
     todo1.setDtStart(originalDueDate);
     todo1.setDtDue(originalDueDate);
@@ -149,8 +149,8 @@ void TodoTest::testSetCompleted()
 
 void TodoTest::testStatus()
 {
-    KDateTime today = QDateTime::currentDateTimeUtc();
-    KDateTime yesterday = today.addDays(-1);
+    QDateTime today = QDateTime::currentDateTimeUtc();
+    QDateTime yesterday = today.addDays(-1);
 
     Todo todo1;
     todo1.setDtStart(yesterday);
@@ -164,7 +164,7 @@ void TodoTest::testStatus()
 
     Todo todo2 = todo1;
     todo2.setPercentComplete(33);
-    todo2.setDtDue(KDateTime());
+    todo2.setDtDue(QDateTime());
     QVERIFY(todo2.isOpenEnded());
 }
 
@@ -172,8 +172,8 @@ void TodoTest::testSerializer_data()
 {
     QTest::addColumn<KCalCore::Todo::Ptr>("todo");
 
-    KDateTime today = QDateTime::currentDateTimeUtc();
-    KDateTime yesterday = today.addDays(-1);
+    QDateTime today = QDateTime::currentDateTimeUtc();
+    QDateTime yesterday = today.addDays(-1);
 
     Todo::Ptr todo1 = Todo::Ptr(new Todo());
     Todo::Ptr todo2 = Todo::Ptr(new Todo());
@@ -262,14 +262,14 @@ void TodoTest::testSerializer()
 
 void TodoTest::testRoles()
 {
-    const KDateTime today = QDateTime::currentDateTimeUtc();
-    const KDateTime yesterday = today.addDays(-1);
+    const QDateTime today = QDateTime::currentDateTimeUtc();
+    const QDateTime yesterday = today.addDays(-1);
     Todo todo;
     todo.setDtStart(today.addDays(-1));
     todo.setDtDue(today);
     QCOMPARE(todo.dateTime(Incidence::RoleDisplayStart), today);
     QCOMPARE(todo.dateTime(Incidence::RoleDisplayEnd), today);
-    todo.setDtDue(KDateTime());
+    todo.setDtDue(QDateTime());
     QCOMPARE(todo.dateTime(Incidence::RoleDisplayStart), yesterday);
     QCOMPARE(todo.dateTime(Incidence::RoleDisplayEnd), yesterday);
 }

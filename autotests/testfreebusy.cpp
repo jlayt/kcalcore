@@ -101,7 +101,7 @@ void FreeBusyTest::testAssign()
     FreeBusy fb3 = fb2;
     QVERIFY(fb3 == fb2);
 
-    KDateTime dt = fb3.dtEnd();
+    QDateTime dt = fb3.dtEnd();
     fb3.setDtEnd(dt.addDays(1));
     fb2.setDtEnd(dt.addDays(1));
     QVERIFY(fb2 == fb3);

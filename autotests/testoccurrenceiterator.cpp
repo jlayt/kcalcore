@@ -104,9 +104,9 @@ void TestOccurrenceIterator::testEventsAndTodos()
     calendar.addTodo(todo);
 
     KCalCore::OccurrenceIterator rIt(calendar, start, actualEnd);
-    QList<KDateTime> expectedTodoOccurrences;
+    QList<QDateTime> expectedTodoOccurrences;
     expectedTodoOccurrences << start << start.addDays(1);
-    QList<KDateTime> expectedEventOccurrences;
+    QList<QDateTime> expectedEventOccurrences;
     expectedEventOccurrences << start << start.addDays(1);
     while (rIt.hasNext()) {
         rIt.next();
@@ -161,7 +161,7 @@ void TestOccurrenceIterator::testAllDayEvents()
     calendar.addEvent(event);
 
     KCalCore::OccurrenceIterator rIt(calendar, start, actualEnd);
-    QList<KDateTime> expectedEventOccurrences;
+    QList<QDateTime> expectedEventOccurrences;
     expectedEventOccurrences << start << start.addDays(1);
     while (rIt.hasNext()) {
         rIt.next();
@@ -264,7 +264,7 @@ void TestOccurrenceIterator::testSubDailyRecurrences()
     calendar.addEvent(event);
 
     KCalCore::OccurrenceIterator rIt(calendar, start, actualEnd);
-    QList<KDateTime> expectedEventOccurrences;
+    QList<QDateTime> expectedEventOccurrences;
     expectedEventOccurrences << start << start.addSecs(60 * 60);
     while (rIt.hasNext()) {
         rIt.next();
@@ -279,9 +279,9 @@ void TestOccurrenceIterator::testJournals()
 {
     KCalCore::MemoryCalendar calendar(QTimeZone::utc());
 
-    const QDateTime today = KDateTime::currentDateTime(QTimeZone::utc());
-    const KDateTime yesterday = today.addDays(-1);
-    const KDateTime tomorrow = today.addDays(1);
+    const QDateTime today = QDateTime::currentDateTimeUtc();
+    const QDateTime yesterday = today.addDays(-1);
+    const QDateTime tomorrow = today.addDays(1);
 
     KCalCore::Journal::Ptr journal(new KCalCore::Journal());
     journal->setUid("journal");

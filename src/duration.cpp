@@ -31,8 +31,8 @@
   @author David Jarvie \<software@astrojar.org.uk\>
 */
 #include "duration.h"
-#include <KDateTime>
 
+#include <QDateTime>
 #include <QTime>
 #include <QTimeZone>
 
@@ -60,7 +60,7 @@ Duration::Duration()
 {
 }
 
-Duration::Duration(const KDateTime &start, const KDateTime &end)
+Duration::Duration(const QDateTime &start, const QDateTime &end)
     : d(new KCalCore::Duration::Private())
 {
     if (start.time() == end.time() && start.timeZone() == end.timeZone()) {
@@ -72,7 +72,7 @@ Duration::Duration(const KDateTime &start, const KDateTime &end)
     }
 }
 
-Duration::Duration(const KDateTime &start, const KDateTime &end, Type type)
+Duration::Duration(const QDateTime &start, const QDateTime &end, Type type)
     : d(new KCalCore::Duration::Private())
 {
     if (type == Days) {
@@ -183,7 +183,7 @@ Duration &Duration::operator/=(int value)
     return *this;
 }
 
-KDateTime Duration::end(const KDateTime &start) const
+QDateTime Duration::end(const QDateTime &start) const
 {
     return d->mDaily ? start.addDays(d->mDuration)
            : start.addSecs(d->mDuration);

@@ -42,7 +42,7 @@
 #include "calendar.h"
 #include "schedulemessage.h"
 
-#include <KDateTime>
+#include <QDateTime>
 
 #include <libical/ical.h>
 
@@ -167,9 +167,9 @@ public:
 
     static QDate readICalDate(const icaltimetype &);
 
-    static icaltimetype writeICalDateTime(const KDateTime &);
+    static icaltimetype writeICalDateTime(const QDateTime &, bool dateOnly = false);
 
-    static icaltimetype writeICalUtcDateTime(const KDateTime &);
+    static icaltimetype writeICalUtcDateTime(const QDateTime &, bool dateOnly = false);
 
     /**
       Creates an ical property from a date/time value.
@@ -187,7 +187,7 @@ public:
       to free the returned property.
     */
     static icalproperty *writeICalDateTimeProperty(const icalproperty_kind kind,
-            const KDateTime &dt,
+            const QDateTime &dt,
             ICalTimeZones *tzlist = 0,
             ICalTimeZones *tzUsedList = 0);
 
@@ -203,7 +203,7 @@ public:
       @param utc    UTC date/time is expected
       @return date/time, converted to UTC if @p utc is @c true
     */
-    static KDateTime readICalDateTime(icalproperty *p, const icaltimetype &t,
+    static QDateTime readICalDateTime(icalproperty *p, const icaltimetype &t,
                                       ICalTimeZones *tzlist, bool utc = false);
 
     /**
@@ -215,7 +215,7 @@ public:
       @param tzlist time zones collection
       @return date/time, or invalid if @p t is not UTC
     */
-    static KDateTime readICalUtcDateTime(icalproperty *p, icaltimetype &t,
+    static QDateTime readICalUtcDateTime(icalproperty *p, icaltimetype &t,
                                          ICalTimeZones *tzlist = 0)
     //TODO: KDE5, move this implementation to icalformat_p.cpp
     {
@@ -239,7 +239,7 @@ public:
       Reads a UTC date/time value from a property.
       @param p is a pointer to a valid icalproperty structure.
     */
-    static KDateTime readICalUtcDateTimeProperty(icalproperty *p)
+    static QDateTime readICalUtcDateTimeProperty(icalproperty *p)
     {
         return readICalDateTimeProperty(p, 0, true);
     }

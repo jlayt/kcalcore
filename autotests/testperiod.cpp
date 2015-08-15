@@ -58,9 +58,9 @@ void PeriodTest::testValidity()
 
 void PeriodTest::testCompare()
 {
-    const KDateTime p1DateTime(QDate(2006, 8, 30));
+    const QDateTime p1DateTime(QDate(2006, 8, 30));
     Period p1(p1DateTime, Duration(24 * 60 * 60));
-    const KDateTime p2DateTime(QDate(2006, 8, 29));
+    const QDateTime p2DateTime(QDate(2006, 8, 29));
     Period p2(p2DateTime, Duration(23 * 60 * 60));
     const QDateTime p3DateTime(QDate(2006, 8, 30), QTime(7, 0, 0), QTimeZone::utc());
     Period p3(p3DateTime, Duration(24 * 60 * 60));
@@ -91,14 +91,14 @@ void PeriodTest::testDataStreamOut()
 
     QDataStream in_stream(&byteArray, QIODevice::ReadOnly);
 
-    KDateTime begin;
+    QDateTime begin;
     in_stream >> begin;
-    // There is no way to serialize KDateTime as of KDE4.5
+    // There is no way to serialize QDateTime as of KDE4.5
     // and the to/fromString methods do not perform a perfect reconstruction
     // of a datetime
     QVERIFY(begin == p1.start();
 
-    KDateTime end;
+    QDateTime end;
     in_stream >> end;
     QVERIFY(end == p1.end());
 

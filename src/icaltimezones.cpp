@@ -27,7 +27,7 @@
 #include "recurrencerule.h"
 
 #include "kcalcore_debug.h"
-#include <KDateTime>
+#include <QDateTime>
 #include <KSystemTimeZone>
 
 #include <QtCore/QDateTime>
@@ -1093,7 +1093,7 @@ ICalTimeZone ICalTimeZoneSource::parse(const QString &name, const QStringList &t
         const QString tzOffset = value.mid(0, value.indexOf(QStringLiteral(";")));
         value = value.mid((value.indexOf(QStringLiteral(";")) + 1));
         const QString tzDaylight = value.mid(0, value.indexOf(QStringLiteral(";")));
-        const KDateTime tzDate = KDateTime::fromString(value.mid((value.lastIndexOf(QStringLiteral(";")) + 1)));
+        const QDateTime tzDate = QDateTime::fromString(value.mid((value.lastIndexOf(QStringLiteral(";")) + 1)));
         if (tzDaylight == QLatin1String("true")) {
             daylight = true;
         }
@@ -1102,7 +1102,7 @@ ICalTimeZone ICalTimeZoneSource::parse(const QString &name, const QStringList &t
             tzOffset.toInt(),
             QByteArray(tzName.toLatin1()), daylight, QStringLiteral("VCAL_TZ_INFORMATION"));
         phases += tzPhase;
-        transitions += KTimeZone::Transition(tzDate.dateTime(), tzPhase);
+        transitions += KTimeZone::Transition(tzDate, tzPhase);
     }
 
     kdata.setPhases(phases, 0);
@@ -1121,8 +1121,8 @@ void ICalTimeZoneSourcePrivate::parseTransitions(const MSSystemTime &date,
 {
     // NOTE that we need to set start and end times and they cannot be
     // to far in either direction to avoid bloating the transitions list
-    const KDateTime klocalStart(QDateTime(QDate(2000, 1, 1), QTime(0, 0, 0)), Qt::LocalTime);
-    const KDateTime maxTime(MAX_DATE(), QTime(23, 59, 59, 999), Qt::LocalTime);
+    const QDateTime klocalStart(QDate(2000, 1, 1), QTime(0, 0, 0), Qt::LocalTime);
+    const QDateTime maxTime(MAX_DATE().date(), QTime(23, 59, 59, 999), Qt::LocalTime);
 
     if (date.wYear) {
         // Absolute change time.
@@ -1158,7 +1158,7 @@ void ICalTimeZoneSourcePrivate::parseTransitions(const MSSystemTime &date,
             r.setWeekStart(1);
             const DateTimeList dtl = r.timesInInterval(klocalStart, maxTime);
             for (int i = 0, end = dtl.count();  i < end;  ++i) {
-                QDateTime utc = dtl[i].dateTime();
+                QDateTime utc = dtl[i];
                 utc.setTimeSpec(Qt::UTC);
                 transitions += KTimeZone::Transition(utc.addSecs(-prevOffset), phase);
             }
@@ -1269,8 +1269,8 @@ QList<QDateTime> ICalTimeZoneSourcePrivate::parsePhase(icalcomponent *c,
          * Note that we had to get DTSTART, TZOFFSETFROM, TZOFFSETTO before reading
          * recurrences.
          */
-        const KDateTime klocalStart(localStart.date(), localStart.time(), Qt::LocalTime);
-        const KDateTime maxTime(MAX_DATE(), QTime(23, 59, 59, 999), Qt::LocalTime);
+        const QDateTime klocalStart(localStart.date(), localStart.time(), Qt::LocalTime);
+        const QDateTime maxTime(MAX_DATE().date(), QTime(23, 59, 59, 999), Qt::LocalTime);
         Recurrence recur;
         icalproperty *p = icalcomponent_get_first_property(c, ICAL_ANY_PROPERTY);
         while (p) {
@@ -1314,7 +1314,7 @@ QList<QDateTime> ICalTimeZoneSourcePrivate::parsePhase(icalcomponent *c,
                 }
                 const DateTimeList dts = r.timesInInterval(klocalStart, maxTime);
                 for (int i = 0, end = dts.count();  i < end;  ++i) {
-                    QDateTime utc = dts[i].dateTime();
+                    QDateTime utc = dts[i];
                     utc.setTimeSpec(Qt::UTC);
                     transitions += utc.addSecs(-prevOffset);
                 }

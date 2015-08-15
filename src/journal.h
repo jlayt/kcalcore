@@ -86,13 +86,13 @@ public:
       @copydoc
       IncidenceBase::dateTime(DateTimeRole)const
     */
-    KDateTime dateTime(DateTimeRole role) const Q_DECL_OVERRIDE;
+    QDateTime dateTime(DateTimeRole role) const Q_DECL_OVERRIDE;
 
     /**
       @copydoc
-      IncidenceBase::setDateTime(const KDateTime &, DateTimeRole )
+      IncidenceBase::setDateTime(const QDateTime &, DateTimeRole )
     */
-    void setDateTime(const KDateTime &dateTime, DateTimeRole role) Q_DECL_OVERRIDE;
+    void setDateTime(const QDateTime &dateTime, DateTimeRole role) Q_DECL_OVERRIDE;
 
     /**
        @copydoc
@@ -104,7 +104,7 @@ public:
        @copydoc
        Incidence::iconName()
     */
-    QLatin1String iconName(const KDateTime &recurrenceId = KDateTime()) const Q_DECL_OVERRIDE;
+    QLatin1String iconName(const QDateTime &recurrenceId = QDateTime()) const Q_DECL_OVERRIDE;
 
     /**
        @copydoc

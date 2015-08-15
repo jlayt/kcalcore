@@ -37,7 +37,7 @@
 
 using namespace KCalCore;
 
-static QString dumpTime(const KDateTime &dt, const QTimeZone &viewZone);
+static QString dumpTime(const QDateTime &dt, const QTimeZone &viewZone);
 
 int main(int argc, char **argv)
 {
@@ -101,14 +101,14 @@ int main(int argc, char **argv)
 
         incidence->recurrence()->dump();
 
-        KDateTime dt(incidence->recurrence()->endDateTime());
+        QDateTime dt(incidence->recurrence()->endDateTime());
         int i = 0;
         if (outstream) {
             if (!dt.isValid()) {
                 if (viewZone.isValid()) {
-                    dt = KDateTime(QDate(2011, 1, 1), QTime(0, 0, 1), viewZone);
+                    dt = QDateTime(QDate(2011, 1, 1), QTime(0, 0, 1), viewZone);
                 } else {
-                    dt = KDateTime(QDate(2011, 1, 1), QTime(0, 0, 1));
+                    dt = QDateTime(QDate(2011, 1, 1), QTime(0, 0, 1));
                 }
             } else {
                 dt = dt.addYears(2);
@@ -149,12 +149,12 @@ int main(int argc, char **argv)
     return 0;
 }
 
-QString dumpTime(const KDateTime &dt, const QTimeZone &viewZone)
+QString dumpTime(const QDateTime &dt, const QTimeZone &viewZone)
 {
     if (!dt.isValid()) {
         return QString();
     }
-    KDateTime vdt = viewZone.isValid() ? dt.toTimeZone(viewZone) : dt;
+    QDateTime vdt = viewZone.isValid() ? dt.toTimeZone(viewZone) : dt;
     QString format;
     format = QStringLiteral("%Y-%m-%dT%H:%M:%S");
     if (vdt.isSecondOccurrence()) {

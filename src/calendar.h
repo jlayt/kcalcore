@@ -597,7 +597,7 @@ public:
       A null pointer is returned if no such Incidence exists.
     */
     Incidence::Ptr incidence(const QString &uid,
-                             const KDateTime &recurrenceId = KDateTime()) const;
+                             const QDateTime &recurrenceId = QDateTime()) const;
 
     /**
       Returns the deleted Incidence associated with the given unique identifier.
@@ -608,7 +608,7 @@ public:
       @return a pointer to the Incidence.
       A null pointer is returned if no such Incidence exists.
     */
-    Incidence::Ptr deleted(const QString &uid, const KDateTime &recurrenceId = KDateTime()) const;
+    Incidence::Ptr deleted(const QString &uid, const QDateTime &recurrenceId = QDateTime()) const;
 
     /**
       Delete all incidences that are instances of recurring incidence @p incidence.
@@ -697,7 +697,7 @@ public:
       @since 4.11
     */
     static Incidence::Ptr createException(const Incidence::Ptr &incidence,
-                                          const KDateTime &recurrenceId,
+                                          const QDateTime &recurrenceId,
                                           bool thisAndFuture = false);
 
     // Event Specific Methods //
@@ -758,11 +758,11 @@ public:
     /**
       Returns a filtered list of all Events which occur on the given timestamp.
 
-      @param dt request filtered Event list for this KDateTime only.
+      @param dt request filtered Event list for this QDateTime only.
 
       @return the list of filtered Events occurring on the specified timestamp.
     */
-    Event::List events(const KDateTime &dt) const;
+    Event::List events(const QDateTime &dt) const;
 
     /**
       Returns a filtered list of all Events occurring within a date range.
@@ -815,12 +815,12 @@ public:
       Returns an unfiltered list of all Events which occur on the given
       timestamp.
 
-      @param dt request unfiltered Event list for this KDateTime only.
+      @param dt request unfiltered Event list for this QDateTime only.
 
       @return the list of unfiltered Events occurring on the specified
       timestamp.
     */
-    virtual Event::List rawEventsForDate(const KDateTime &dt) const = 0;
+    virtual Event::List rawEventsForDate(const QDateTime &dt) const = 0;
 
     /**
       Returns an unfiltered list of all Events occurring within a date range.
@@ -868,7 +868,7 @@ public:
       A null pointer is returned if no such Event exists.
     */
     virtual Event::Ptr event(const QString &uid,
-                             const KDateTime &recurrenceId = KDateTime()) const = 0;
+                             const QDateTime &recurrenceId = QDateTime()) const = 0;
 
     /**
       Returns the deleted Event associated with the given unique identifier.
@@ -883,7 +883,7 @@ public:
       @see deletionTracking()
     */
     virtual Event::Ptr deletedEvent(const QString &uid,
-                                    const KDateTime &recurrenceId = KDateTime()) const = 0;
+                                    const QDateTime &recurrenceId = QDateTime()) const = 0;
 
     /**
       Returns a sorted, unfiltered list of all deleted Events for this Calendar.
@@ -1043,7 +1043,7 @@ public:
       A null pointer is returned if no such Todo exists.
     */
     virtual Todo::Ptr todo(const QString &uid,
-                           const KDateTime &recurrenceId = KDateTime()) const = 0;
+                           const QDateTime &recurrenceId = QDateTime()) const = 0;
 
     /**
       Returns the deleted Todo associated with the given unique identifier.
@@ -1058,7 +1058,7 @@ public:
       @see deletionTracking()
     */
     virtual Todo::Ptr deletedTodo(const QString &uid,
-                                  const KDateTime &recurrenceId = KDateTime()) const = 0;
+                                  const QDateTime &recurrenceId = QDateTime()) const = 0;
 
     /**
       Returns a sorted, unfiltered list of all deleted Todos for this Calendar.
@@ -1185,7 +1185,7 @@ public:
       A null pointer is returned if no such Journal exists.
     */
     virtual Journal::Ptr journal(const QString &uid,
-                                 const KDateTime &recurrenceId = KDateTime()) const = 0;
+                                 const QDateTime &recurrenceId = QDateTime()) const = 0;
 
     /**
       Returns the deleted Journal associated with the given unique identifier.
@@ -1200,7 +1200,7 @@ public:
       @see deletionTracking()
     */
     virtual Journal::Ptr deletedJournal(const QString &uid,
-                                        const KDateTime &recurrenceId = KDateTime()) const = 0;
+                                        const QDateTime &recurrenceId = QDateTime()) const = 0;
 
     /**
       Returns a sorted, unfiltered list of all deleted Journals for this Calendar.
@@ -1297,7 +1297,7 @@ public:
 
       @return the list of Alarms for the for the specified time range.
     */
-    virtual Alarm::List alarms(const KDateTime &from, const KDateTime &to, bool excludeBlockedAlarms = false) const = 0;
+    virtual Alarm::List alarms(const QDateTime &from, const QDateTime &to, bool excludeBlockedAlarms = false) const = 0;
 
     // Observer Specific Methods //
 
@@ -1376,7 +1376,7 @@ protected:
       @param uid is the UID for the Incidence that has been updated.
       @param recurrenceId is possible recurrenceid of incidence.
     */
-    void incidenceUpdated(const QString &uid, const KDateTime &recurrenceId) Q_DECL_OVERRIDE;
+    void incidenceUpdated(const QString &uid, const QDateTime &recurrenceId) Q_DECL_OVERRIDE;
 
     /**
       Let Calendar subclasses set the time zone.
@@ -1432,7 +1432,7 @@ protected:
       @param to is the upper range of the next Alarm repitition.
     */
     void appendAlarms(Alarm::List &alarms, const Incidence::Ptr &incidence,
-                      const KDateTime &from, const KDateTime &to) const;
+                      const QDateTime &from, const QDateTime &to) const;
 
     /**
       Appends alarms of recurring events in interval to list of alarms.
@@ -1444,7 +1444,7 @@ protected:
       @param to is the upper range of the next Alarm repitition.
     */
     void appendRecurringAlarms(Alarm::List &alarms, const Incidence::Ptr &incidence,
-                               const KDateTime &from, const KDateTime &to) const;
+                               const QDateTime &from, const QDateTime &to) const;
 
     /**
       Enables or disabled deletion tracking.

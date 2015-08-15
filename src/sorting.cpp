@@ -24,7 +24,7 @@
 #include "journal.h"
 #include "todo.h"
 
-#include <KDateTime>
+#include <QDateTime>
 
 // PENDING(kdab) Review
 // The QString::compare() need to be replace by a DUI string comparisons.

@@ -34,7 +34,7 @@
 #include "calformat.h"
 #include "schedulemessage.h"
 
-#include <KDateTime>
+#include <QDateTime>
 
 #include <QTimeZone>
 

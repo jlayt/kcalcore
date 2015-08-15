@@ -32,7 +32,7 @@
 
 #include "period.h"
 
-#include <KDateTime>
+#include <QDateTime>
 
 #include <QtCore/QHash>
 
@@ -43,14 +43,14 @@ class Q_DECL_HIDDEN KCalCore::Period::Private
 {
 public:
     Private() : mHasDuration(false), mDailyDuration(false)  {}
-    Private(const KDateTime &start, const KDateTime &end, bool hasDuration)
+    Private(const QDateTime &start, const QDateTime &end, bool hasDuration)
         : mStart(start),
           mEnd(end),
           mHasDuration(hasDuration),
           mDailyDuration(false)
     {}
-    KDateTime mStart;    // period starting date/time
-    KDateTime mEnd;      // period ending date/time
+    QDateTime mStart;    // period starting date/time
+    QDateTime mEnd;      // period ending date/time
     bool mHasDuration;   // does period have a duration?
     bool mDailyDuration; // duration is defined as number of days, not seconds
 };
@@ -60,12 +60,12 @@ Period::Period() : d(new KCalCore::Period::Private())
 {
 }
 
-Period::Period(const KDateTime &start, const KDateTime &end)
+Period::Period(const QDateTime &start, const QDateTime &end)
     : d(new KCalCore::Period::Private(start, end, false))
 {
 }
 
-Period::Period(const KDateTime &start, const Duration &duration)
+Period::Period(const QDateTime &start, const Duration &duration)
     : d(new KCalCore::Period::Private(start, duration.end(start), true))
 {
     d->mDailyDuration = duration.isDaily();
@@ -107,12 +107,12 @@ Period &Period::operator=(const Period &other)
     return *this;
 }
 
-KDateTime Period::start() const
+QDateTime Period::start() const
 {
     return d->mStart;
 }
 
-KDateTime Period::end() const
+QDateTime Period::end() const
 {
     return d->mEnd;
 }

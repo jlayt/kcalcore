@@ -36,7 +36,7 @@
 
 using namespace KCalCore;
 
-static QString dumpTime(const KDateTime &dt, const QTimeZone &viewZone);
+static QString dumpTime(const QDateTime &dt, const QTimeZone &viewZone);
 
 int main(int argc, char **argv)
 {
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 
         incidence->recurrence()->dump();
 
-        KDateTime dt;
+        QDateTime dt;
         if (incidence->allDay()) {
             dt = incidence->dtStart().addDays(-1);
         } else {
@@ -135,12 +135,12 @@ int main(int argc, char **argv)
     return 0;
 }
 
-QString dumpTime(const KDateTime &dt, const QTimeZone &viewZone)
+QString dumpTime(const QDateTime &dt, const QTimeZone &viewZone)
 {
     if (!dt.isValid()) {
         return QString();
     }
-    KDateTime vdt = viewZone.isValid() ? dt.toTimeZone(viewZone) : dt;
+    QDateTime vdt = viewZone.isValid() ? dt.toTimeZone(viewZone) : dt;
     QString format;
     format = QStringLiteral("%Y-%m-%dT%H:%M:%S");
     if (vdt.isSecondOccurrence()) {

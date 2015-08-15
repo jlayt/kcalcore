@@ -63,7 +63,7 @@ public:
     DateList mRDates;
     DateTimeList mExDateTimes;
     DateList mExDates;
-    KDateTime mStartDateTime;    // date/time of first recurrence
+    QDateTime mStartDateTime;    // date/time of first recurrence
     QList<RecurrenceObserver *> mObservers;
 
     // Cache the type of the recurrence with the old system (e.g. MonthlyPos)
@@ -173,7 +173,7 @@ void Recurrence::removeObserver(RecurrenceObserver *observer)
     }
 }
 
-KDateTime Recurrence::startDateTime() const
+QDateTime Recurrence::startDateTime() const
 {
     return d->mStartDateTime;
 }
@@ -395,7 +395,7 @@ bool Recurrence::recursOn(const QDate &qd, const QTimeZone &timeZone) const
     }
 }
 
-bool Recurrence::recursAt(const KDateTime &dt) const
+bool Recurrence::recursAt(const QDateTime &dt) const
 {
     // Convert to recurrence's time zone for date comparisons, and for more efficient time comparisons
     QDateTime dtrecur = dt.toTimeZone(d->mStartDateTime.timeZone());
@@ -428,7 +428,7 @@ bool Recurrence::recursAt(const KDateTime &dt) const
 /** Calculates the cumulative end of the whole recurrence (rdates and rrules).
     If any rrule is infinite, or the recurrence doesn't have any rrules or
     rdates, an invalid date is returned. */
-KDateTime Recurrence::endDateTime() const
+QDateTime Recurrence::endDateTime() const
 {
     DateTimeList dts;
     dts << startDateTime();
@@ -439,15 +439,15 @@ KDateTime Recurrence::endDateTime() const
         dts << d->mRDateTimes.last();
     }
     for (int i = 0, end = d->mRRules.count();  i < end;  ++i) {
-        KDateTime rl(d->mRRules[i]->endDt());
+        QDateTime rl(d->mRRules[i]->endDt());
         // if any of the rules is infinite, the whole recurrence is
         if (!rl.isValid()) {
-            return KDateTime();
+            return QDateTime();
         }
         dts << rl;
     }
     dts.sortUnique();
-    return dts.isEmpty() ? KDateTime() : dts.last();
+    return dts.isEmpty() ? QDateTime() : dts.last();
 }
 
 /** Calculates the cumulative end of the whole recurrence (rdates and rrules).
@@ -455,7 +455,7 @@ KDateTime Recurrence::endDateTime() const
     rdates, an invalid date is returned. */
 QDate Recurrence::endDate() const
 {
-    KDateTime end(endDateTime());
+    QDateTime end(endDateTime());
     return end.isValid() ? end.date() : QDate();
 }
 
@@ -468,7 +468,7 @@ void Recurrence::setEndDate(const QDate &date)
     setEndDateTime(dt);
 }
 
-void Recurrence::setEndDateTime(const KDateTime &dateTime)
+void Recurrence::setEndDateTime(const QDateTime &dateTime)
 {
     if (d->mRecurReadOnly) {
         return;
@@ -487,7 +487,7 @@ int Recurrence::duration() const
     return rrule ? rrule->duration() : 0;
 }
 
-int Recurrence::durationTo(const KDateTime &datetime) const
+int Recurrence::durationTo(const QDateTime &datetime) const
 {
     // Emulate old behavior: This is just an interface to the first rule!
     RecurrenceRule *rrule = defaultRRuleConst();
@@ -581,7 +581,7 @@ QDate Recurrence::startDate() const
     return d->mStartDateTime.date();
 }
 
-void Recurrence::setStartDateTime(const KDateTime &start)
+void Recurrence::setStartDateTime(const QDateTime &start)
 {
     if (d->mRecurReadOnly) {
         return;
@@ -949,7 +949,7 @@ TimeList Recurrence::recurTimesOn(const QDate &date, const QTimeZone &timeZone) 
     return times;
 }
 
-DateTimeList Recurrence::timesInInterval(const KDateTime &start, const KDateTime &end) const
+DateTimeList Recurrence::timesInInterval(const QDateTime &start, const QDateTime &end) const
 {
     int i, count;
     DateTimeList times;
@@ -965,7 +965,7 @@ DateTimeList Recurrence::timesInInterval(const KDateTime &start, const KDateTime
     }
 
     // add rdates that fit in the interval
-    KDateTime kdt(d->mStartDateTime);
+    QDateTime kdt(d->mStartDateTime);
     for (i = 0, count = d->mRDates.count();  i < count;  ++i) {
         kdt.setDate(d->mRDates[i]);
         if (kdt >= start && kdt <= end) {
@@ -1017,12 +1017,12 @@ DateTimeList Recurrence::timesInInterval(const KDateTime &start, const KDateTime
     return times;
 }
 
-KDateTime Recurrence::getNextDateTime(const KDateTime &preDateTime) const
+QDateTime Recurrence::getNextDateTime(const QDateTime &preDateTime) const
 {
-    KDateTime nextDT = preDateTime;
+    QDateTime nextDT = preDateTime;
     // prevent infinite loops, e.g. when an exrule extinguishes an rrule (e.g.
     // the exrule is identical to the rrule). If an occurrence is found, break
-    // out of the loop by returning that KDateTime
+    // out of the loop by returning that QDateTime
 // TODO_Recurrence: Is a loop counter of 1000 really okay? I mean for secondly
 // recurrence, an exdate might exclude more than 1000 intervals!
     int loop = 0;
@@ -1032,7 +1032,7 @@ KDateTime Recurrence::getNextDateTime(const KDateTime &preDateTime) const
         //     1.0) Add the start date if it's after preDateTime
         //     1.1) Use the next occurrence from the explicit RDATE lists
         //     1.2) Add the next recurrence for each of the RRULEs
-        //   2) Take the earliest recurrence of these = KDateTime nextDT
+        //   2) Take the earliest recurrence of these = QDateTime nextDT
         //   3) If that date/time is not excluded, either explicitly by an EXDATE or
         //      by an EXRULE, return nextDT as the next date/time of the recurrence
         //   4) If it's excluded, start all at 1), but starting at nextDT (instead
@@ -1051,7 +1051,7 @@ KDateTime Recurrence::getNextDateTime(const KDateTime &preDateTime) const
             dates << d->mRDateTimes[i];
         }
 
-        KDateTime kdt(startDateTime());
+        QDateTime kdt(startDateTime());
         for (i = 0, end = d->mRDates.count();  i < end;  ++i) {
             kdt.setDate(d->mRDates[i]);
             if (kdt > nextDT) {
@@ -1062,7 +1062,7 @@ KDateTime Recurrence::getNextDateTime(const KDateTime &preDateTime) const
 
         // Add the next occurrences from all RRULEs.
         for (i = 0, end = d->mRRules.count();  i < end;  ++i) {
-            KDateTime dt = d->mRRules[i]->getNextDate(nextDT);
+            QDateTime dt = d->mRRules[i]->getNextDate(nextDT);
             if (dt.isValid()) {
                 dates << dt;
             }
@@ -1071,7 +1071,7 @@ KDateTime Recurrence::getNextDateTime(const KDateTime &preDateTime) const
         // Take the first of these (all others can't be used later on)
         dates.sortUnique();
         if (dates.isEmpty()) {
-            return KDateTime();
+            return QDateTime();
         }
         nextDT = dates.first();
 
@@ -1089,22 +1089,22 @@ KDateTime Recurrence::getNextDateTime(const KDateTime &preDateTime) const
     }
 
     // Couldn't find a valid occurrences in 1000 loops, something is wrong!
-    return KDateTime();
+    return QDateTime();
 }
 
-KDateTime Recurrence::getPreviousDateTime(const KDateTime &afterDateTime) const
+QDateTime Recurrence::getPreviousDateTime(const QDateTime &afterDateTime) const
 {
-    KDateTime prevDT = afterDateTime;
+    QDateTime prevDT = afterDateTime;
     // prevent infinite loops, e.g. when an exrule extinguishes an rrule (e.g.
     // the exrule is identical to the rrule). If an occurrence is found, break
-    // out of the loop by returning that KDateTime
+    // out of the loop by returning that QDateTime
     int loop = 0;
     while (loop < 1000) {
         // Outline of the algo:
         //   1) Find the next date/time after preDateTime when the event could recur
         //     1.1) Use the next occurrence from the explicit RDATE lists
         //     1.2) Add the next recurrence for each of the RRULEs
-        //   2) Take the earliest recurrence of these = KDateTime nextDT
+        //   2) Take the earliest recurrence of these = QDateTime nextDT
         //   3) If that date/time is not excluded, either explicitly by an EXDATE or
         //      by an EXRULE, return nextDT as the next date/time of the recurrence
         //   4) If it's excluded, start all at 1), but starting at nextDT (instead
@@ -1121,7 +1121,7 @@ KDateTime Recurrence::getPreviousDateTime(const KDateTime &afterDateTime) const
             dates << d->mRDateTimes[i];
         }
 
-        KDateTime kdt(startDateTime());
+        QDateTime kdt(startDateTime());
         for (i = d->mRDates.count();  --i >= 0;) {
             kdt.setDate(d->mRDates[i]);
             if (kdt < prevDT) {
@@ -1133,7 +1133,7 @@ KDateTime Recurrence::getPreviousDateTime(const KDateTime &afterDateTime) const
         // Add the previous occurrences from all RRULEs.
         int end;
         for (i = 0, end = d->mRRules.count();  i < end;  ++i) {
-            KDateTime dt = d->mRRules[i]->getPreviousDate(prevDT);
+            QDateTime dt = d->mRRules[i]->getPreviousDate(prevDT);
             if (dt.isValid()) {
                 dates << dt;
             }
@@ -1142,7 +1142,7 @@ KDateTime Recurrence::getPreviousDateTime(const KDateTime &afterDateTime) const
         // Take the last of these (all others can't be used later on)
         dates.sortUnique();
         if (dates.isEmpty()) {
-            return KDateTime();
+            return QDateTime();
         }
         prevDT = dates.last();
 
@@ -1160,7 +1160,7 @@ KDateTime Recurrence::getPreviousDateTime(const KDateTime &afterDateTime) const
     }
 
     // Couldn't find a valid occurrences in 1000 loops, something is wrong!
-    return KDateTime();
+    return QDateTime();
 }
 
 /***************************** PROTECTED FUNCTIONS ***************************/
@@ -1259,7 +1259,7 @@ void Recurrence::setRDateTimes(const DateTimeList &rdates)
     updated();
 }
 
-void Recurrence::addRDateTime(const KDateTime &rdate)
+void Recurrence::addRDateTime(const QDateTime &rdate)
 {
     if (d->mRecurReadOnly) {
         return;
@@ -1310,7 +1310,7 @@ void Recurrence::setExDateTimes(const DateTimeList &exdates)
     d->mExDateTimes.sortUnique();
 }
 
-void Recurrence::addExDateTime(const KDateTime &exdate)
+void Recurrence::addExDateTime(const QDateTime &exdate)
 {
     if (d->mRecurReadOnly) {
         return;
@@ -1379,7 +1379,7 @@ void Recurrence::dump() const
     count = d->mRDateTimes.count();
     qCDebug(KCALCORE_LOG) << endl << "  -)" << count << "Recurrence Date/Times:";
     for (i = 0;  i < count;  ++i) {
-        qCDebug(KCALCORE_LOG) << "    " << d->mRDateTimes[i].dateTime();
+        qCDebug(KCALCORE_LOG) << "    " << d->mRDateTimes[i];
     }
     count = d->mExDates.count();
     qCDebug(KCALCORE_LOG) << endl << "  -)" << count << "Exceptions Dates:";
@@ -1389,7 +1389,7 @@ void Recurrence::dump() const
     count = d->mExDateTimes.count();
     qCDebug(KCALCORE_LOG) << endl << "  -)" << count << "Exception Date/Times:";
     for (i = 0;  i < count;  ++i) {
-        qCDebug(KCALCORE_LOG) << "    " << d->mExDateTimes[i].dateTime();
+        qCDebug(KCALCORE_LOG) << "    " << d->mExDateTimes[i];
     }
 }
 

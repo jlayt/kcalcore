@@ -30,7 +30,7 @@ void JournalTest::testValidity()
 {
     QDate dt = QDate::currentDate();
     Journal *journal = new Journal();
-    journal->setDtStart(KDateTime(dt));
+    journal->setDtStart(QDateTime(dt));
     journal->setSummary("Journal Summary");
     journal->setDescription("This is a description of my journal");
     journal->setLocation("the place");
@@ -43,13 +43,13 @@ void JournalTest::testCompare()
 {
     QDate dt = QDate::currentDate();
     Journal journal1;
-    journal1.setDtStart(KDateTime(dt));
+    journal1.setDtStart(QDateTime(dt));
     journal1.setSummary("Journal Summary");
     journal1.setDescription("This is a description of my journal");
     journal1.setLocation("the place");
 
     Journal journal2;
-    journal2.setDtStart(KDateTime(dt).addDays(1));
+    journal2.setDtStart(QDateTime(dt).addDays(1));
     journal2.setSummary("Journal2 Summary");
     journal2.setDescription("This is a description of another journal");
     journal2.setLocation("the other place");
@@ -62,7 +62,7 @@ void JournalTest::testClone()
 {
     QDate dt = QDate::currentDate();
     Journal journal1;
-    journal1.setDtStart(KDateTime(dt));
+    journal1.setDtStart(QDateTime(dt));
     journal1.setSummary("Journal1 Summary");
     journal1.setDescription("This is a description of the first journal");
     journal1.setLocation("the place");
@@ -78,7 +78,7 @@ void JournalTest::testRich()
 {
     QDate dt = QDate::currentDate();
     Journal journal1;
-    journal1.setDtStart(KDateTime(dt));
+    journal1.setDtStart(QDateTime(dt));
     journal1.setSummary("<html><b><i>Journal1 Summary</i></b></html>", true);
     journal1.setDescription("<html>This is a of the <b>first</b> journal</html>", true);
     journal1.setLocation("<qt><h1>the place</h1></qt>", true);
@@ -91,7 +91,7 @@ void JournalTest::testAssign()
 {
     QDate dt = QDate::currentDate();
     Journal journal1;
-    journal1.setDtStart(KDateTime(dt));
+    journal1.setDtStart(QDateTime(dt));
     journal1.setSummary("Journal1 Summary");
     journal1.setDescription("This is a description of the first journal");
     journal1.setLocation("the place");

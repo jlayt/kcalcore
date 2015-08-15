@@ -26,10 +26,10 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kcomponentdata.h>
-#include <kdatetime.h>
 #include <qdebug.h>
 #include <ksystemtimezone.h>
 
+#include <QtCore/QDateTime>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QCoreApplication>
@@ -37,7 +37,7 @@
 
 using namespace KCalCore;
 
-static QString dumpTime(const KDateTime &dt, const QTimeZone &viewZone);
+static QString dumpTime(const QDateTime &dt, const QTimeZone &viewZone);
 
 int main(int argc, char **argv)
 {
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 
         incidence->recurrence()->dump();
 
-        KDateTime dt;
+        QDateTime dt;
         if (incidence->allDay()) {
             dt = incidence->dtStart().addDays(-1);
         } else {
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-QString dumpTime(const KDateTime &dt, const QTimeZone &viewZone)
+QString dumpTime(const QDateTime &dt, const QTimeZone &viewZone)
 {
     if (!dt.isValid()) {
         return QString();

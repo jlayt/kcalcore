@@ -253,7 +253,7 @@ public:
      *
      * The purpose of this method is to enable updates of ICalTimeZone
      * definitions when a calendar is reloaded, without invalidating pointers
-     * to the instance (particularly pointers held by KDateTime objects).
+     * to the instance (particularly pointers held by QDateTime objects).
      *
      * @param other time zone whose definition is to be used
      * @return true if definition was updated (i.e. names are the same)

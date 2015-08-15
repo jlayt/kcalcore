@@ -138,9 +138,9 @@ public:
         SortDirection sortDirection = SortDirectionAscending) const Q_DECL_OVERRIDE;
 
     /**
-      @copydoc Calendar::rawEventsForDate(const KDateTime &)const
+      @copydoc Calendar::rawEventsForDate(const QDateTime &)const
     */
-    Event::List rawEventsForDate(const KDateTime &dt) const Q_DECL_OVERRIDE;
+    Event::List rawEventsForDate(const QDateTime &dt) const Q_DECL_OVERRIDE;
 
     /**
      * Returns an incidence by identifier.
@@ -154,13 +154,13 @@ public:
     */
     Event::Ptr event(
         const QString &uid,
-        const KDateTime &recurrenceId = KDateTime()) const Q_DECL_OVERRIDE;
+        const QDateTime &recurrenceId = QDateTime()) const Q_DECL_OVERRIDE;
 
     /**
       @copydoc Calendar::deletedEvent()
     */
     Event::Ptr deletedEvent(
-        const QString &uid, const KDateTime &recurrenceId = KDateTime()) const Q_DECL_OVERRIDE;
+        const QString &uid, const QDateTime &recurrenceId = QDateTime()) const Q_DECL_OVERRIDE;
 
     /**
       @copydoc Calendar::deletedEvents(EventSortField, SortDirection)const
@@ -218,12 +218,12 @@ public:
       @copydoc Calendar::todo()
     */
     Todo::Ptr todo(const QString &uid,
-                   const KDateTime &recurrenceId = KDateTime()) const Q_DECL_OVERRIDE;
+                   const QDateTime &recurrenceId = QDateTime()) const Q_DECL_OVERRIDE;
 
     /**
       @copydoc Calendar::deletedTodo()
     */
-    Todo::Ptr deletedTodo(const QString &uid, const KDateTime &recurrenceId = KDateTime()) const Q_DECL_OVERRIDE;
+    Todo::Ptr deletedTodo(const QString &uid, const QDateTime &recurrenceId = QDateTime()) const Q_DECL_OVERRIDE;
 
     /**
       @copydoc Calendar::deletedTodos(TodoSortField, SortDirection)const
@@ -272,13 +272,13 @@ public:
       @copydoc Calendar::journal()
     */
     Journal::Ptr journal(const QString &uid,
-                         const KDateTime &recurrenceId = KDateTime()) const Q_DECL_OVERRIDE;
+                         const QDateTime &recurrenceId = QDateTime()) const Q_DECL_OVERRIDE;
 
     /**
       @copydoc Calendar::deletedJournal()
     */
     Journal::Ptr deletedJournal(const QString &uid,
-                                const KDateTime &recurrenceId = KDateTime()) const Q_DECL_OVERRIDE;
+                                const QDateTime &recurrenceId = QDateTime()) const Q_DECL_OVERRIDE;
 
     /**
       @copydoc Calendar::deletedJournals(JournalSortField, SortDirection)const
@@ -300,25 +300,25 @@ public:
     /**
       @copydoc Calendar::alarms()
     */
-    Alarm::List alarms(const KDateTime &from, const KDateTime &to, bool excludeBlockedAlarms = false) const Q_DECL_OVERRIDE;
+    Alarm::List alarms(const QDateTime &from, const QDateTime &to, bool excludeBlockedAlarms = false) const Q_DECL_OVERRIDE;
 
     /**
       Return a list of Alarms that occur before the specified timestamp.
 
       @param to is the ending timestamp.
-      @return the list of Alarms occurring before the specified KDateTime.
+      @return the list of Alarms occurring before the specified QDateTime.
     */
-    Alarm::List alarmsTo(const KDateTime &to) const;
+    Alarm::List alarmsTo(const QDateTime &to) const;
 
     /**
-      @copydoc Calendar::incidenceUpdate(const QString &,const KDateTime &)
+      @copydoc Calendar::incidenceUpdate(const QString &,const QDateTime &)
     */
-    void incidenceUpdate(const QString &uid, const KDateTime &recurrenceId) Q_DECL_OVERRIDE;
+    void incidenceUpdate(const QString &uid, const QDateTime &recurrenceId) Q_DECL_OVERRIDE;
 
     /**
-      @copydoc Calendar::incidenceUpdated(const QString &,const KDateTime &)
+      @copydoc Calendar::incidenceUpdated(const QString &,const QDateTime &)
     */
-    void incidenceUpdated(const QString &uid, const KDateTime &recurrenceId) Q_DECL_OVERRIDE;
+    void incidenceUpdated(const QString &uid, const QDateTime &recurrenceId) Q_DECL_OVERRIDE;
 
     using QObject::event;   // prevent warning about hidden virtual method
 

@@ -52,22 +52,22 @@ public:
     }
 
     OccurrenceIterator *q;
-    KDateTime start;
-    KDateTime end;
+    QDateTime start;
+    QDateTime end;
 
     struct Occurrence {
         Occurrence()
         {
         }
 
-        Occurrence(const Incidence::Ptr &i, const KDateTime &recurrenceId, const KDateTime &startDate)
+        Occurrence(const Incidence::Ptr &i, const QDateTime &recurrenceId, const QDateTime &startDate)
             : incidence(i), recurrenceId(recurrenceId), startDate(startDate)
         {
         }
 
         Incidence::Ptr incidence;
-        KDateTime recurrenceId;
-        KDateTime startDate;
+        QDateTime recurrenceId;
+        QDateTime startDate;
     };
     QList<Occurrence> occurrenceList;
     QListIterator<Occurrence> occurrenceIt;
@@ -80,7 +80,7 @@ public:
      */
     bool occurrenceIsHidden(const Calendar &calendar,
                             const Incidence::Ptr &inc,
-                            const KDateTime &occurrenceDate)
+                            const QDateTime &occurrenceDate)
     {
         if ((inc->type() == Incidence::TypeTodo) &&
                 calendar.filter() &&
@@ -107,8 +107,8 @@ public:
                 continue;
             }
             if (inc->recurs()) {
-                QHash<KDateTime, Incidence::Ptr> recurrenceIds;
-                KDateTime incidenceRecStart = inc->dateTime(Incidence::RoleRecurrenceStart);
+                QHash<QDateTime, Incidence::Ptr> recurrenceIds;
+                QDateTime incidenceRecStart = inc->dateTime(Incidence::RoleRecurrenceStart);
                 foreach (const Incidence::Ptr &exception, calendar.instances(inc)) {
                     if (incidenceRecStart.isValid()) {
                         recurrenceIds.insert(exception->recurrenceId().toTimeZone(incidenceRecStart.timeZone()), exception);
@@ -118,8 +118,8 @@ public:
                 const DateTimeList occurrences = inc->recurrence()->timesInInterval(start, end);
                 Incidence::Ptr incidence(inc), lastInc(inc);
                 qint64 offset(0), lastOffset(0);
-                KDateTime occurrenceStartDate;
-                foreach(KDateTime recurrenceId, occurrences) {    //krazy:exclude=foreach
+                QDateTime occurrenceStartDate;
+                foreach(QDateTime recurrenceId, occurrences) {    //krazy:exclude=foreach
                     //timesInInterval generates always date-times,
                     //which is not what we want for all-day events
                     occurrenceStartDate = recurrenceId;
@@ -154,7 +154,7 @@ public:
                     }
                 }
             } else {
-                occurrenceList << Private::Occurrence(inc, KDateTime(), inc->dtStart());
+                occurrenceList << Private::Occurrence(inc, QDateTime(), inc->dtStart());
             }
         }
         occurrenceIt = QListIterator<Private::Occurrence>(occurrenceList);
@@ -162,7 +162,7 @@ public:
 };
 //@endcond
 
-static uint qHash(const KDateTime &dt)
+static uint qHash(const QDateTime &dt)
 {
     return qHash(dt.toString());
 }
@@ -179,8 +179,8 @@ static uint qHash(const KDateTime &dt)
  * available data structures.
  */
 OccurrenceIterator::OccurrenceIterator(const Calendar &calendar,
-                                       const KDateTime &start,
-                                       const KDateTime &end)
+                                       const QDateTime &start,
+                                       const QDateTime &end)
     : d(new KCalCore::OccurrenceIterator::Private(this))
 {
     d->start = start;
@@ -218,8 +218,8 @@ OccurrenceIterator::OccurrenceIterator(const Calendar &calendar,
 
 OccurrenceIterator::OccurrenceIterator(const Calendar &calendar,
                                        const Incidence::Ptr &incidence,
-                                       const KDateTime &start,
-                                       const KDateTime &end)
+                                       const QDateTime &start,
+                                       const QDateTime &end)
     : d(new KCalCore::OccurrenceIterator::Private(this))
 {
     Q_ASSERT(incidence);
@@ -247,12 +247,12 @@ Incidence::Ptr OccurrenceIterator::incidence() const
     return d->current.incidence;
 }
 
-KDateTime OccurrenceIterator::occurrenceStartDate() const
+QDateTime OccurrenceIterator::occurrenceStartDate() const
 {
     return d->current.startDate;
 }
 
-KDateTime OccurrenceIterator::recurrenceId() const
+QDateTime OccurrenceIterator::recurrenceId() const
 {
     return d->current.recurrenceId;
 }
