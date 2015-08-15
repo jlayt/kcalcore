@@ -2072,7 +2072,7 @@ QString VCalFormat::qDateTimeToISO(const QDateTime &dt, bool zulu)
                    tmpDT.date().year(), tmpDT.date().month(),
                    tmpDT.date().day(), tmpDT.time().hour(),
                    tmpDT.time().minute(), tmpDT.time().second());
-    if (zulu || dt.isUtc()) {
+    if (zulu || dt.timeSpec() == Qt::UTC) {
         tmpStr += QLatin1Char('Z');
     }
     return tmpStr;
@@ -2353,7 +2353,7 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
 
             anEvent = VEventToEvent(curVO);
             if (anEvent) {
-                if (hasTimeZone && !anEvent->allDay() && anEvent->dtStart().isUtc()) {
+                if (hasTimeZone && !anEvent->allDay() && anEvent->dtStart().timeSpec() == Qt::UTC) {
                     //This sounds stupid but is how others are doing it, so here
                     //we go. If there is a TZ in the VCALENDAR even if the dtStart
                     //and dtend are in UTC, clients interpret it using also the TZ defined
@@ -2392,7 +2392,7 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
         } else if (strcmp(vObjectName(curVO), VCTodoProp) == 0) {
             Todo::Ptr aTodo = VTodoToEvent(curVO);
             if (aTodo) {
-                if (hasTimeZone && !aTodo->allDay()  && aTodo->dtStart().isUtc()) {
+                if (hasTimeZone && !aTodo->allDay()  && aTodo->dtStart().timeSpec() == Qt::UTC) {
                     //This sounds stupid but is how others are doing it, so here
                     //we go. If there is a TZ in the VCALENDAR even if the dtStart
                     //and dtend are in UTC, clients interpret it usint alse the TZ defined
