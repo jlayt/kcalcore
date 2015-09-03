@@ -247,7 +247,7 @@ void IncidenceBase::setLastModified(const QDateTime &lm)
     d->mDirtyFields.insert(FieldLastModified);
 
     // Convert to UTC and remove milliseconds part.
-    QDateTime current = lm.toUtc();
+    QDateTime current = lm.toUTC();
     QTime t = current.time();
     t.setHMS(t.hour(), t.minute(), t.second(), 0);
     current.setTime(t);

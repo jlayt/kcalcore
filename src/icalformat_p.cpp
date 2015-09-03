@@ -2424,7 +2424,7 @@ icalproperty *ICalFormatImpl::writeICalDateTimeProperty(const icalproperty_kind 
     case ICAL_DTSTAMP_PROPERTY:
     case ICAL_CREATED_PROPERTY:
     case ICAL_LASTMODIFIED_PROPERTY:
-        t = writeICalDateTime(dt.toUtc());
+        t = writeICalDateTime(dt.toUTC());
         break;
     default:
         t = writeICalDateTime(dt);
@@ -2561,7 +2561,7 @@ ICalDateTime ICalFormatImpl::readICalDateTime(icalproperty *p,
     } else {
         result = QDateTime(QDate(t.year, t.month, t.day), QTime(t.hour, t.minute, t.second), timeZone);
         if (utc) {
-            result = result.toUtc();
+            result = result.toUTC();
         }
     }
     return ICalDateTime(result, t.is_date);

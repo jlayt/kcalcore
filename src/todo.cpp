@@ -264,7 +264,7 @@ void Todo::setCompleted(const QDateTime &completed)
     update();
     if (!d->recurTodo(this)) {
         d->mPercentComplete = 100;
-        d->mCompleted = completed.toUtc();
+        d->mCompleted = completed.toUTC();
         setFieldDirty(FieldCompleted);
     }
     updated();

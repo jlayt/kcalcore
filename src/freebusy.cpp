@@ -216,7 +216,7 @@ QByteArray FreeBusy::typeStr() const
 
 void FreeBusy::setDtStart(const QDateTime &start)
 {
-    IncidenceBase::setDtStart(start.toUtc());
+    IncidenceBase::setDtStart(start.toUTC());
     updated();
 }
 

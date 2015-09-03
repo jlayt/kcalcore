@@ -2064,7 +2064,7 @@ QString VCalFormat::qDateTimeToISO(const QDateTime &dt, bool zulu)
 
     QDateTime tmpDT;
     if (zulu) {
-        tmpDT = dt.toUtc();
+        tmpDT = dt.toUTC();
     } else {
         tmpDT = dt.toTimeZone(d->mCalendar->timeZone());
     }

@@ -360,7 +360,7 @@ void Incidence::setCreated(const QDateTime &created)
         return;
     }
 
-    d->mCreated = created.toUtc();
+    d->mCreated = created.toUTC();
     setFieldDirty(FieldCreated);
 
 // FIXME: Shouldn't we call updated for the creation date, too?
