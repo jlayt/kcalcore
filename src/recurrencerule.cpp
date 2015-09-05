@@ -396,8 +396,10 @@ bool Constraint::matches(const QDate &dt, RecurrenceRule::PeriodType type) const
  */
 bool Constraint::matches(const QDateTime &dt, RecurrenceRule::PeriodType type) const
 {
-    if ((hour >= 0 && (hour != dt.time().hour() ||
-                       secondOccurrence != dt.isSecondOccurrence())) ||
+    if ((hour >= 0 && (hour != dt.time().hour()
+                       // FIXME SecondOccurrance - Fix when supported in QDateTime
+                       //|| secondOccurrence != dt.isSecondOccurrence()
+                        )) ||
             (minute >= 0 && minute != dt.time().minute()) ||
             (second >= 0 && second != dt.time().second()) ||
             !matches(dt.date(), type)) {
@@ -453,9 +455,10 @@ QDateTime Constraint::intervalDateTime(RecurrenceRule::PeriodType type) const
         d = DateHelper::getDate(year, (month > 0) ? month : 1, day ? day : 1);
     }
     cachedDt = QDateTime(d, t, timeZone);
-    if (secondOccurrence) {
-        cachedDt.setSecondOccurrence(true);
-    }
+    // FIXME SecondOccurrance - Fix when supported in QDateTime
+    //if (secondOccurrence) {
+    //    cachedDt.setSecondOccurrence(true);
+    //}
     useCachedDt = true;
     return cachedDt;
 }
@@ -629,9 +632,10 @@ void Constraint::appendDateTime(const QDate &date, const QTime &time,
 {
     QDateTime dt = QDateTime(date, time, timeZone);
     if (dt.isValid()) {
-        if (secondOccurrence) {
-            dt.setSecondOccurrence(true);
-        }
+        // FIXME SecondOccurrance - Fix when supported in QDateTime
+        //if (secondOccurrence) {
+        //    dt.setSecondOccurrence(true);
+        //}
         list.append(dt);
     }
 }
@@ -685,7 +689,8 @@ bool Constraint::readDateTime(const QDateTime &dt, RecurrenceRule::PeriodType ty
         minute = dt.time().minute();
     case RecurrenceRule::rHourly:
         hour = dt.time().hour();
-        secondOccurrence = dt.isSecondOccurrence();
+        // FIXME SecondOccurrance - Fix when supported in QDateTime
+        //secondOccurrence = dt.isSecondOccurrence();
     case RecurrenceRule::rDaily:
         day = dt.date().day();
     case RecurrenceRule::rMonthly:
@@ -2126,9 +2131,10 @@ QString dumpTime(const QDateTime &dt)
     }
     QString result;
     result = dt.toString(QStringLiteral("%a %Y-%m-%d %H:%M:%S %:Z"));
-    if (dt.isSecondOccurrence()) {
-        result += QStringLiteral(" (2nd)");
-    }
+    // FIXME SecondOccurrance - Fix when supported in QDateTime
+    //if (dt.isSecondOccurrence()) {
+    //    result += QStringLiteral(" (2nd)");
+    //}
     if (dt.timeSpec() == Qt::LocalTime) {
         result += QStringLiteral("LocalTime");
     }

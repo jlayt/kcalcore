@@ -143,9 +143,10 @@ QString dumpTime(const QDateTime &dt, const QTimeZone &viewZone)
     QDateTime vdt = viewZone.isValid() ? dt.toTimeZone(viewZone) : dt;
     QString format;
     format = QStringLiteral("%Y-%m-%dT%H:%M:%S");
-    if (vdt.isSecondOccurrence()) {
-        format += QStringLiteral(" %Z");
-    }
+    // FIXME SecondOccurrance - Fix when supported in QDateTime
+    //if (vdt.isSecondOccurrence()) {
+    //    format += QStringLiteral(" %Z");
+    //}
     if (vdt.timeZone() == QTimeZone::utc()) {
         format += QStringLiteral(" %:Z");
     }
